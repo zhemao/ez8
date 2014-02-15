@@ -31,6 +31,7 @@ direction:
   | A { false }
   | M { true }
   | INT_LIT { bool_of_int $1 }
+  | { false }
 
 instruction:
   | GET addr { Get($2) }
