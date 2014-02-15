@@ -46,8 +46,8 @@ rule token = parse
   | decdigit+ | "0x" hexdigit+
         as lit { INT_LIT(int_of_string lit) }
   | '\n' | "\r\n"{ EOL }
-  | "org" { ORG }
-  | "alias" { ALIAS }
+  | ".org" { ORG }
+  | ".alias" { ALIAS }
   | letter (letter | decdigit)* as label { LABEL(label) }
   | [' ' '\t'] { token lexbuf }
 and inline_comments = parse
