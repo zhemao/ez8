@@ -45,12 +45,13 @@ rule token = parse
   | "m" { M }
   | decdigit+ | "0x" hexdigit+
         as lit { INT_LIT(int_of_string lit) }
+  | ';' { comments lexbuf }
   | '\n' | "\r\n"{ EOL }
   | ".org" { ORG }
   | ".alias" { ALIAS }
   | letter (letter | decdigit)* as label { LABEL(label) }
   | [' ' '\t'] { token lexbuf }
   | eof { EOF }
-and inline_comments = parse
+and comments = parse
   | '\n' { token lexbuf }
-  | _ { inline_comments lexbuf }
+  | _ { comments lexbuf }
