@@ -3,18 +3,18 @@ type addr =
   | AddrLabel of string
 
 type instruction =
-  | Get  of int * bool
-  | Put  of int * bool
-  | Sll  of int * bool
-  | Srl  of int * bool
-  | Sra  of int * bool
-  | Add  of int * bool
-  | Adc  of int * bool
-  | Sub  of int * bool
-  | And  of int * bool
-  | Ior  of int * bool
-  | Xor  of int * bool
-  | Set  of int * bool
+  | Get  of addr
+  | Put  of addr
+  | Sll  of addr * bool
+  | Srl  of addr * bool
+  | Sra  of addr * bool
+  | Add  of addr * bool
+  | Adc  of addr * bool
+  | Sub  of addr * bool
+  | And  of addr * bool
+  | Ior  of addr * bool
+  | Xor  of addr * bool
+  | Set  of int
   | Slll of int * bool
   | Srll of int * bool
   | Sral of int * bool
