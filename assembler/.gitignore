@@ -5,3 +5,4 @@
 /scanner.mli
 /parser.ml
 /parser.mli
+/encoder
