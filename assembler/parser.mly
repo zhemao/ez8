@@ -87,6 +87,7 @@ directive:
 
 top_level:
   | directive EOL top_level { $1 :: $3 }
+  | EOL top_level { $2 }
   | EOF { [] }
 
 %%
