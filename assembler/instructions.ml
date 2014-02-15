@@ -19,6 +19,7 @@ type instruction =
   | Srll of int * bool
   | Sral of int * bool
   | Addl of int * bool
+  | Adcl of int * bool
   | Subl of int * bool
   | Andl of int * bool
   | Iorl of int * bool
