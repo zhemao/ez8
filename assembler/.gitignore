@@ -5,4 +5,4 @@
 /scanner.mli
 /parser.ml
 /parser.mli
-/encoder
+/ez8asm

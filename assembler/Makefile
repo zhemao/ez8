@@ -2,7 +2,7 @@ OCAMLYACC=menhir
 OCAMLLEX=ocamllex
 OCAMLC=ocamlc
 
-encoder: instructions.cmo parser.cmo scanner.cmo encoder.cmo
+ez8asm: instructions.cmo parser.cmo scanner.cmo encoder.cmo
 	$(OCAMLC) $^ -o $@
 
 encoder.cmo encoder.cmi: encoder.ml scanner.cmi parser.cmi instructions.cmi
