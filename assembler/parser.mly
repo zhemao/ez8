@@ -11,7 +11,7 @@
 %token ADDL ADCL SUBL ANDL IORL XORL
 %token GOTO CALL
 %token SKEQZ SKNEZ SKLTZ SKGEZ SKGTZ SKLEZ SKBS SKBC
-%token RET RETINT CLR IGET IPUT
+%token RET RETINT CLR COM IGET IPUT
 %token A M
 %token <int> INT_LIT
 %token ORG ALIAS
@@ -76,8 +76,10 @@ instruction:
   | RETINT { Retint }
   | CLR { Clr(AddrNone, false) }
   | CLR addr { Clr($2, true) }
-  | IGET addr INT_LIT direction { Iget($3, $2, $4) }
-  | IPUT addr INT_LIT direction { Iput($3, $2, $4) }
+  | COM { Com(AddrNone, false) }
+  | COM addr { Com($2, true) }
+  | IGET addr INT_LIT { Iget($3, $2) }
+  | IPUT addr INT_LIT { Iput($3, $2) }
 
 directive:
   | LABEL { Label($1) }

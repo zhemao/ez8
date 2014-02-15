@@ -38,8 +38,9 @@ type instruction =
   | Ret
   | Retint
   | Clr of addr * bool
-  | Iget of int * addr * bool
-  | Iput of int * addr * bool
+  | Com of addr * bool
+  | Iget of int * addr
+  | Iput of int * addr
 
 type directive =
   | Label of string

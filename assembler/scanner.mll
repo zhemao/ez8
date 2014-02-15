@@ -39,6 +39,7 @@ rule token = parse
   | "ret" { RET }
   | "retint" { RETINT }
   | "clr" { CLR }
+  | "com" { COM }
   | "iget" { IGET }
   | "iput" { IPUT }
   | "a" { A }
