@@ -1,6 +1,7 @@
 type addr =
   | AddrLiteral of int
   | AddrLabel of string
+  | AddrNone
 
 type instruction =
   | Get  of addr
