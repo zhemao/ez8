@@ -50,6 +50,7 @@ rule token = parse
   | ".alias" { ALIAS }
   | letter (letter | decdigit)* as label { LABEL(label) }
   | [' ' '\t'] { token lexbuf }
+  | eof { EOF }
 and inline_comments = parse
   | '\n' { token lexbuf }
   | _ { inline_comments lexbuf }
