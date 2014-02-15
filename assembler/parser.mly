@@ -45,15 +45,15 @@ instruction:
   | IOR addr direction { Ior($2, $3) }
   | XOR addr direction { Xor($2, $3) }
   | SET INT_LIT { Set($2) }
-  | SLLL INT_LIT direction { Slll($2, $3) }
-  | SRLL INT_LIT direction { Srll($2, $3) }
-  | SRAL INT_LIT direction { Sral($2, $3) }
-  | ADDL INT_LIT direction { Addl($2, $3) }
-  | ADCL INT_LIT direction { Adcl($2, $3) }
-  | SUBL INT_LIT direction { Subl($2, $3) }
-  | ANDL INT_LIT direction { Andl($2, $3) }
-  | IORL INT_LIT direction { Iorl($2, $3) }
-  | XORL INT_LIT direction { Xorl($2, $3) }
+  | SLLL INT_LIT { Slll($2) }
+  | SRLL INT_LIT { Srll($2) }
+  | SRAL INT_LIT { Sral($2) }
+  | ADDL INT_LIT { Addl($2) }
+  | ADCL INT_LIT { Adcl($2) }
+  | SUBL INT_LIT { Subl($2) }
+  | ANDL INT_LIT { Andl($2) }
+  | IORL INT_LIT { Iorl($2) }
+  | XORL INT_LIT { Xorl($2) }
   | GOTO addr { Goto($2) }
   | CALL addr { Call($2) }
   | SKEQZ { Skeqz(AddrNone, false) }

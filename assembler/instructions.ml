@@ -16,15 +16,15 @@ type instruction =
   | Ior  of addr * bool
   | Xor  of addr * bool
   | Set  of int
-  | Slll of int * bool
-  | Srll of int * bool
-  | Sral of int * bool
-  | Addl of int * bool
-  | Adcl of int * bool
-  | Subl of int * bool
-  | Andl of int * bool
-  | Iorl of int * bool
-  | Xorl of int * bool
+  | Slll of int
+  | Srll of int
+  | Sral of int
+  | Addl of int
+  | Adcl of int
+  | Subl of int
+  | Andl of int
+  | Iorl of int
+  | Xorl of int
   | Goto of addr
   | Call of addr
   | Skeqz of addr * bool
