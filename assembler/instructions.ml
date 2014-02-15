@@ -27,19 +27,19 @@ type instruction =
   | Xorl of int * bool
   | Goto of addr
   | Call of addr
-  | Skeqz of int * bool
-  | Sknez of int * bool
-  | Skltz of int * bool
-  | Skgez of int * bool
-  | Skgtz of int * bool
-  | Sklez of int * bool
-  | Skbs  of int * bool
-  | Skbc  of int * bool
+  | Skeqz of addr * bool
+  | Sknez of addr * bool
+  | Skltz of addr * bool
+  | Skgez of addr * bool
+  | Skgtz of addr * bool
+  | Sklez of addr * bool
+  | Skbs  of addr * int * bool
+  | Skbc  of addr * int * bool
   | Ret
   | Retint
-  | Clr of int * bool
-  | Iget of int * bool
-  | Iput of int * bool
+  | Clr of addr * bool
+  | Iget of int * addr * bool
+  | Iput of int * addr * bool
 
 type directive =
   | Label of string
