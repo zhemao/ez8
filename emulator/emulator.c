@@ -79,5 +79,5 @@ int main(int argc, char *argv[])
 		printf("Program exited successfully\n");
 	}
 
-	return 0;
+	return emu_ret;
 }
