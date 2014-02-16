@@ -284,8 +284,8 @@ int ez8_step(struct ez8_state *state)
 	if (opcode < 8) {
 		ez8_simple_instruction(state, instr);
 		return 0;
-	} 
-	
+	}
+
 	if (opcode < 10)
 		return ez8_jump_instruction(state, instr);
 	if (opcode < 13)
