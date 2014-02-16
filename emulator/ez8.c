@@ -185,7 +185,7 @@ static int ez8_skip_instruction(struct ez8_state *state, uint16_t instr)
 	uint16_t addr = (instr >> 4) & 0xff;
 	uint16_t selector = (instr >> 1) & 0x7;
 	uint16_t direction = instr & 0x1;
-	uint8_t value, skip;
+	int8_t value, skip;
 
 	if (direction)
 		value = ez8_get(state, addr);
