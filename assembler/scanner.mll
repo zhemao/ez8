@@ -33,7 +33,7 @@ rule token = parse
   | "skltz" { SKLTZ }
   | "skgez" { SKGEZ }
   | "skgtz" { SKGTZ }
-  | "skglez" { SKGTZ }
+  | "sklez" { SKLEZ }
   | "skbs" { SKBS }
   | "skbc" { SKBC }
   | "ret" { RET }
@@ -44,7 +44,7 @@ rule token = parse
   | "iput" { IPUT }
   | "a" | "A" { A }
   | "m" | "M" { M }
-  | decdigit+ | "0x" hexdigit+
+  | '-'? decdigit+ | "0x" hexdigit+
         as lit { INT_LIT(int_of_string lit) }
   | ';' { comments lexbuf }
   | '\n' | "\r\n"{ EOL }
