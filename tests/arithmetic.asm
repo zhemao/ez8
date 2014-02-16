@@ -44,6 +44,16 @@ main
   subl 0x6c
   skbs STATUS 0
   goto error
+  clr
+  skeqz
+  goto error
+  set 0xa3
+  put 0x21
+  com 0x21
+  get 0x21
+  subl 0x5c
+  skbs STATUS 0
+  goto error
   set 0
   ret
 
