@@ -32,9 +32,9 @@ let encode_instruction labels instruction =
     let indirect_addr_to_bits addr = (resolve_addr labels addr), 3 in
     match instruction with
       | Get(addr) -> assemble_instruction
-            [0, 4; addr_to_bits addr; 0, 2; 0, 0]
+            [0, 4; addr_to_bits addr; 0, 4]
       | Put(addr) -> assemble_instruction
-            [0, 4; addr_to_bits addr; 0, 2; 0, 1]
+            [0, 4; addr_to_bits addr; 1, 4]
       | Sll(addr, dir) -> assemble_instruction
             [1, 4; addr_to_bits addr; 0, 3; bool_to_bits dir]
       | Srl(addr, dir) -> assemble_instruction
@@ -53,7 +53,7 @@ let encode_instruction labels instruction =
             [3, 4; addr_to_bits addr; 2, 3; bool_to_bits dir]
       | Xor(addr, dir) -> assemble_instruction
             [3, 4; addr_to_bits addr; 4, 3; bool_to_bits dir]
-      | Set(lit) -> assemble_instruction [8, 4; lit, 8; 0, 4]
+      | Set(lit) -> assemble_instruction [4, 4; lit, 8; 0, 4]
       | Slll(lit) -> assemble_instruction [5, 4; lit, 8; 0, 4]
       | Srll(lit) -> assemble_instruction [5, 4; lit, 8; 8, 4]
       | Sral(lit) -> assemble_instruction [5, 4; lit, 8; 12, 4]
