@@ -42,8 +42,8 @@ rule token = parse
   | "com" { COM }
   | "iget" { IGET }
   | "iput" { IPUT }
-  | "a" { A }
-  | "m" { M }
+  | "a" | "A" { A }
+  | "m" | "M" { M }
   | decdigit+ | "0x" hexdigit+
         as lit { INT_LIT(int_of_string lit) }
   | ';' { comments lexbuf }
