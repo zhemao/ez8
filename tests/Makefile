@@ -1,4 +1,4 @@
-test: test_arithmetic
+test: test_arithmetic test_skips
 
 test_%: %.bin
 	../emulator/ez8_emu $<
