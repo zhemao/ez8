@@ -11,7 +11,7 @@ struct ez8_state {
 	int code_len;
 	uint16_t pc;
 	uint8_t accum;
-	uint8_t tos;
+	int8_t tos;
 
 	uint16_t stack[EZ8_STACK_SIZE];
 	uint8_t memory[EZ8_MEM_SIZE];
