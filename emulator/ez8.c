@@ -1,17 +1,17 @@
 #include "ez8.h"
 
-enum regmap {
+enum {
 	REG_STATUS = 1
 };
 
-enum status_bits {
+enum {
 	STATUS_Z = 0,
 	STATUS_C = 1,
 	STATUS_BANK = 5,
 	STATUS_GIE = 7
 };
 
-static inline uint8_t ez8_get(struct ez8_state *state, uint8_t addr)
+static uint8_t ez8_get(struct ez8_state *state, uint8_t addr)
 {
 	uint16_t actual_addr;
 	uint8_t bank;
@@ -25,7 +25,7 @@ static inline uint8_t ez8_get(struct ez8_state *state, uint8_t addr)
 	return state->memory[actual_addr];
 }
 
-static inline void ez8_set(struct ez8_state *state, uint8_t addr, uint8_t val)
+static void ez8_set(struct ez8_state *state, uint8_t addr, uint8_t val)
 {
 	uint16_t actual_addr;
 	uint8_t bank;
@@ -90,7 +90,7 @@ static void ez8_simple_instruction(struct ez8_state *state, uint16_t instr)
 
 	status = ez8_get(state, REG_STATUS);
 
-	if (opcode < 8) {
+	if (opcode < 4) {
 		arg = ez8_get(state, operand);
 	} else {
 		arg = operand;
@@ -138,6 +138,142 @@ static void ez8_simple_instruction(struct ez8_state *state, uint16_t instr)
 	state->pc++;
 }
 
+static inline int ez8_stack_full(struct ez8_state *state)
+{
+	return state->tos == EZ8_STACK_SIZE - 1;
+}
+
+static inline int ez8_stack_empty(struct ez8_state *state)
+{
+	return state->tos == -1;
+}
+
+static inline uint16_t ez8_stack_pop(struct ez8_state *state)
+{
+	uint16_t value = state->stack[state->tos];
+	state->tos--;
+	return value;
+}
+
+static inline void ez8_stack_push(struct ez8_state *state, uint16_t value)
+{
+	state->tos++;
+	state->stack[state->tos] = value;
+}
+
+static int ez8_jump_instruction(struct ez8_state *state, uint16_t instr)
+{
+	uint16_t opcode = (instr >> 12) & 0xf;
+	uint16_t addr = instr & 0xfff;
+
+	if (addr >= state->code_len)
+		return -1;
+
+
+	if (opcode == 9) {
+		if (ez8_stack_full(state))
+			return -1;
+		ez8_stack_push(state, state->pc);
+	}
+
+	state->pc = addr;
+
+	return 0;
+}
+
+static int ez8_skip_instruction(struct ez8_state *state, uint16_t instr)
+{
+	uint16_t opcode = (instr >> 12) & 0xf;
+	uint16_t addr = (instr >> 4) & 0xff;
+	uint16_t selector = (instr >> 1) & 0x7;
+	uint16_t direction = instr & 0x1;
+	uint8_t value, skip;
+
+	if (direction)
+		value = ez8_get(state, addr);
+	else
+		value = state->accum;
+
+	if (opcode == 10) {
+		switch (selector & 0x6) {
+		case 0: skip = (value == 0); break;
+		case 2: skip = (value < 0); break;
+		default: skip = (value > 0); break;
+		}
+		if (selector & 0x1)
+			skip = !skip;
+	} else if (opcode == 11)
+		skip = (((value >> selector) & 0x1) == 1);
+	else
+		skip = (((value >> selector) & 0x1) == 0);
+
+	if (skip)
+		state->pc += 2;
+	else
+		state->pc++;
+
+	if (state->pc >= state->code_len)
+		return -1;
+
+	return 0;
+}
+
+static int ez8_ret_instruction(struct ez8_state *state, uint16_t instr)
+{
+	uint16_t retint = (instr >> 11) & 0x1;
+
+	if (ez8_stack_empty(state))
+		return -1;
+
+	state->pc = ez8_stack_pop(state);
+
+	if (retint) {
+		uint8_t status = ez8_get(state, REG_STATUS);
+		status |= (1 << STATUS_GIE);
+		ez8_set(state, REG_STATUS, status);
+	}
+
+	return 0;
+}
+
+static void ez8_clr_com_instruction(struct ez8_state *state, uint16_t instr)
+{
+	uint16_t addr = (instr >> 4) & 0xff;
+	uint16_t selector = (instr >> 2) & 0x1;
+	uint16_t direction = instr & 0x1;
+	uint8_t value;
+
+	if (direction) {
+		if (selector)
+			value = ~ez8_get(state, addr);
+		else
+			value = 0;
+		ez8_set(state, addr, value);
+	} else {
+		if (selector)
+			value = ~(state->accum);
+		else
+			value = 0;
+		state->accum = value;
+	}
+}
+
+static void ez8_indirect_instruction(struct ez8_state *state, uint16_t instr)
+{
+	uint16_t offset = (instr >> 4) & 0xff;
+	uint16_t indir_addr = (instr >> 1) & 0x7;
+	uint16_t direction = instr & 0x1;
+
+	uint16_t real_indir_addr =
+		(indir_addr & 0x1) | (indir_addr & 0x6) << 7;
+	uint16_t addr = state->memory[real_indir_addr] + offset;
+
+	if (direction)
+		ez8_set(state, addr, state->accum);
+	else
+		state->accum = ez8_get(state, addr);
+}
+
 int ez8_step(struct ez8_state *state)
 {
 	uint16_t instr, opcode;
@@ -148,10 +284,22 @@ int ez8_step(struct ez8_state *state)
 	if (opcode < 8) {
 		ez8_simple_instruction(state, instr);
 		return 0;
+	} 
+	
+	if (opcode < 10)
+		return ez8_jump_instruction(state, instr);
+	if (opcode < 13)
+		return ez8_skip_instruction(state, instr);
+	if (opcode == 13)
+		return ez8_ret_instruction(state, instr);
+	if (opcode == 14) {
+		ez8_clr_com_instruction(state, instr);
+		return 0;
 	}
-
-	if (state->pc > state->code_len)
-		return -1;
+	if (opcode == 15) {
+		ez8_indirect_instruction(state, instr);
+		return 0;
+	}
 
 	return 0;
 }
