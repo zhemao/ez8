@@ -5,6 +5,7 @@ goto main
 
 .org 5
 main
+; test addition and subtractioin
   set 25
   put 0x21
   set 5
@@ -21,6 +22,7 @@ main
   subl 29
   skbc STATUS 0
   goto error
+; test shifting
   set 0x80
   sral 3
   subl 0xf0
@@ -33,6 +35,7 @@ main
   subl 0x20
   skbs STATUS 0
   goto error
+; test bitwise operations
   set 0x50
   ior 0x21 M
   set 0x10
@@ -44,6 +47,7 @@ main
   subl 0x6c
   skbs STATUS 0
   goto error
+; test clr and com
   clr
   skeqz
   goto error
