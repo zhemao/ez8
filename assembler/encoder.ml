@@ -140,4 +140,4 @@ let () =
         let code = second_pass directives 0 labels code in
         let binfilename = Filename.chop_extension asmfilename ^ ".bin" in
         let binfile = open_out_bin binfilename in
-        output_code binfile code;;
+        output_code binfile code; close_in asmfile; close_out binfile;;
