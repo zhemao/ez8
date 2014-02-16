@@ -1,4 +1,5 @@
 #include "ez8.h"
+#include <stdio.h>
 
 enum {
 	REG_STATUS = 1
@@ -167,10 +168,6 @@ static int ez8_jump_instruction(struct ez8_state *state, uint16_t instr)
 	uint16_t opcode = (instr >> 12) & 0xf;
 	uint16_t addr = instr & 0xfff;
 
-	if (addr >= state->code_len)
-		return -1;
-
-
 	if (opcode == 9) {
 		if (ez8_stack_full(state))
 			return -1;
@@ -212,9 +209,6 @@ static int ez8_skip_instruction(struct ez8_state *state, uint16_t instr)
 		state->pc += 2;
 	else
 		state->pc++;
-
-	if (state->pc >= state->code_len)
-		return -1;
 
 	return 0;
 }
@@ -307,6 +301,14 @@ int ez8_step(struct ez8_state *state)
 
 int ez8_execute(struct ez8_state *state)
 {
-	while (ez8_step(state) == 0);
+	while (ez8_step(state) == 0) {
+		if (state->pc >= state->code_len) {
+			printf("PC at invalid address\n");
+			return -1;
+		}
+		printf("pc: %d, a: %d, tos: %d\n",
+				state->pc, state->accum, state->tos);
+	}
+
 	return state->accum;
 }
