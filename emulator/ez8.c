@@ -129,7 +129,8 @@ static void ez8_simple_instruction(struct ez8_state *state, uint16_t instr)
 		}
 	}
 
-	ez8_set(state, REG_STATUS, status);
+	if (operand != REG_STATUS || !direction)
+		ez8_set(state, REG_STATUS, status);
 
 	if (direction)
 		ez8_set(state, operand, result);
