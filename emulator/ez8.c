@@ -251,6 +251,7 @@ static void ez8_clr_com_instruction(struct ez8_state *state, uint16_t instr)
 			value = 0;
 		state->accum = value;
 	}
+	state->pc++;
 }
 
 static void ez8_indirect_instruction(struct ez8_state *state, uint16_t instr)
@@ -267,6 +268,7 @@ static void ez8_indirect_instruction(struct ez8_state *state, uint16_t instr)
 		ez8_set(state, addr, state->accum);
 	else
 		state->accum = ez8_get(state, addr);
+	state->pc++;
 }
 
 int ez8_step(struct ez8_state *state)
