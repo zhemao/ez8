@@ -80,7 +80,9 @@ instruction:
   | COM { Com(AddrNone, false) }
   | COM addr { Com($2, true) }
   | IGET addr INT_LIT { Iget($3, $2) }
+  | IGET addr { Iget(0, $2) }
   | IPUT addr INT_LIT { Iput($3, $2) }
+  | IPUT addr { Iput(0, $2) }
 
 directive:
   | LABEL COLON { Label($1) }

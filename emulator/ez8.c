@@ -257,12 +257,9 @@ static void ez8_clr_com_instruction(struct ez8_state *state, uint16_t instr)
 static void ez8_indirect_instruction(struct ez8_state *state, uint16_t instr)
 {
 	uint16_t offset = (instr >> 4) & 0xff;
-	uint16_t indir_addr = (instr >> 1) & 0x7;
+	uint16_t indir_addr = (instr >> 1) & 0x3;
 	uint16_t direction = instr & 0x1;
-
-	uint16_t real_indir_addr =
-		(indir_addr & 0x1) | (indir_addr & 0x6) << 7;
-	uint16_t addr = state->memory[real_indir_addr] + offset;
+	uint8_t addr = ez8_get(state, indir_addr + 4) + offset;
 
 	if (direction)
 		ez8_set(state, addr, state->accum);

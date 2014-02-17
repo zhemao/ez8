@@ -3,6 +3,7 @@ open Printf
 
 exception Syntax_error of int * int * string
 exception Too_many_bits
+exception Not_enough_bits
 
 module LabelMap = Map.Make(String);;
 
@@ -22,7 +23,7 @@ let rec concat_bits chunks word_size accum =
                 let shift = word_size - size in
                 let accum = accum lor ((mask bits size) lsl shift) in
                 concat_bits rest shift accum
-      | [] -> accum
+      | [] -> if word_size != 0 then raise Not_enough_bits else accum
 
 let encode_instruction labels instruction =
     let assemble_instruction chunks = concat_bits chunks 16 0 in
@@ -88,9 +89,9 @@ let encode_instruction labels instruction =
       | Com(addr, dir) -> assemble_instruction
             [14, 4; addr_to_bits addr; 4, 3; bool_to_bits dir]
       | Iget(lit, addr) -> assemble_instruction
-            [15, 4; indirect_addr_to_bits addr; 0, 0]
+            [15, 4; lit, 8; indirect_addr_to_bits addr; 0, 1]
       | Iput(lit, addr) -> assemble_instruction
-            [15, 4; indirect_addr_to_bits addr; 0, 1]
+            [15, 4; lit, 8; indirect_addr_to_bits addr; 1, 1]
 
 let rec second_pass directives cur_addr labels code =
     match directives with
