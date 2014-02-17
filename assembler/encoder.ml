@@ -86,7 +86,7 @@ let encode_instruction labels instruction =
       | Clr(addr, dir) -> assemble_instruction
             [14, 4; addr_to_bits addr; 0, 3; bool_to_bits dir]
       | Com(addr, dir) -> assemble_instruction
-            [14, 4; addr_to_bits addr; 2, 3; bool_to_bits dir]
+            [14, 4; addr_to_bits addr; 4, 3; bool_to_bits dir]
       | Iget(lit, addr) -> assemble_instruction
             [15, 4; indirect_addr_to_bits addr; 0, 0]
       | Iput(lit, addr) -> assemble_instruction

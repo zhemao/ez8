@@ -234,7 +234,7 @@ static int ez8_ret_instruction(struct ez8_state *state, uint16_t instr)
 static void ez8_clr_com_instruction(struct ez8_state *state, uint16_t instr)
 {
 	uint16_t addr = (instr >> 4) & 0xff;
-	uint16_t selector = (instr >> 2) & 0x1;
+	uint16_t selector = (instr >> 3) & 0x1;
 	uint16_t direction = instr & 0x1;
 	uint8_t value;
 
