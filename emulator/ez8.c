@@ -303,6 +303,7 @@ int ez8_step(struct ez8_state *state)
 
 int ez8_execute(struct ez8_state *state)
 {
+	int i;
 	while (ez8_step(state) == 0) {
 		if (state->pc >= state->code_len) {
 			printf("PC at invalid address\n");
@@ -310,6 +311,11 @@ int ez8_execute(struct ez8_state *state)
 		}
 		printf("pc: %d, a: %d, tos: %d\n",
 				state->pc, state->accum, state->tos);
+		for (i = 0; i < EZ8_MEM_SIZE; i++) {
+			if (state->memory[i] != 0)
+				printf("0x%x -> %d, ", i, state->memory[i]);
+		}
+		printf("\n");
 	}
 
 	return state->accum;
