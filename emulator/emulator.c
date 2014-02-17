@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <arpa/inet.h>
+#include <string.h>
 #include "ez8.h"
 
 int getfilesize(FILE *file)
@@ -71,6 +72,7 @@ int main(int argc, char *argv[])
 	state.pc = 0;
 	state.accum = 0;
 	state.tos = -1;
+	memset(state.memory, 0, EZ8_MEM_SIZE);
 
 	emu_ret = ez8_execute(&state);
 	if (emu_ret) {
