@@ -47,6 +47,7 @@ rule token = parse
   | '-'? decdigit+ | "0x" hexdigit+
         as lit { INT_LIT(int_of_string lit) }
   | ';' { comments lexbuf }
+  | ':' { COLON }
   | '\n' | "\r\n"{ EOL }
   | ".org" { ORG }
   | ".alias" { ALIAS }

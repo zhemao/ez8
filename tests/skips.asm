@@ -2,7 +2,7 @@
 goto main
 
 .org 5
-main
+main:
   set 0
   skeqz
   goto error
@@ -22,6 +22,6 @@ main
   set 0
   ret
 
-error
+error:
   set 1
   ret

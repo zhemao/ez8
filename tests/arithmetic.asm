@@ -4,7 +4,7 @@
 goto main
 
 .org 5
-main
+main:
 ; test addition and subtractioin
   set 25
   put 0x21
@@ -61,6 +61,6 @@ main
   set 0
   ret
 
-error
+error:
   set 1
   ret

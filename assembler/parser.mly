@@ -16,7 +16,7 @@
 %token <int> INT_LIT
 %token ORG ALIAS
 %token <string> LABEL
-%token EOL EOF
+%token EOL EOF COLON
 
 %start top_level
 %type <Instructions.directive list> top_level
@@ -83,7 +83,7 @@ instruction:
   | IPUT addr INT_LIT { Iput($3, $2) }
 
 directive:
-  | LABEL { Label($1) }
+  | LABEL COLON { Label($1) }
   | ORG INT_LIT { Org($2) }
   | ALIAS LABEL INT_LIT { Alias($2, $3) }
   | instruction { Instruction($1) }
