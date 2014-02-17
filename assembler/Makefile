@@ -1,6 +1,6 @@
 OCAMLYACC=menhir
 OCAMLLEX=ocamllex
-NATIVE=false
+NATIVE=true
 OCAMLC=ocamlc
 OCAMLOPT=ocamlopt
 
