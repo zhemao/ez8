@@ -25,4 +25,12 @@ bitwise bw (
     .b_sel (1'b0)
 );
 
+skip_calc sc (
+    .opcode (2'b0),
+    .reg_value (8'd0),
+    .accum_value (8'd0),
+    .selector (3'b0),
+    .direction (1'b0)
+);
+
 endmodule
