@@ -84,14 +84,14 @@ let encode_instruction labels instruction =
             [12, 4; addr_to_bits addr; bitnum, 3; bool_to_bits dir]
       | Ret -> 0xd000
       | Retint -> 0xd800
-      | Clr(addr, dir) -> assemble_instruction
-            [14, 4; addr_to_bits addr; 0, 3; bool_to_bits dir]
-      | Com(addr, dir) -> assemble_instruction
-            [14, 4; addr_to_bits addr; 4, 3; bool_to_bits dir]
       | Iget(lit, addr) -> assemble_instruction
-            [15, 4; lit, 8; indirect_addr_to_bits addr; 0, 1]
+            [14, 4; lit, 8; indirect_addr_to_bits addr; 0, 1]
       | Iput(lit, addr) -> assemble_instruction
-            [15, 4; lit, 8; indirect_addr_to_bits addr; 1, 1]
+            [14, 4; lit, 8; indirect_addr_to_bits addr; 1, 1]
+      | Clr(addr, dir) -> assemble_instruction
+            [15, 4; addr_to_bits addr; 0, 3; bool_to_bits dir]
+      | Com(addr, dir) -> assemble_instruction
+            [15, 4; addr_to_bits addr; 4, 3; bool_to_bits dir]
 
 let rec second_pass directives cur_addr labels code =
     match directives with

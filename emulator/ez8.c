@@ -287,11 +287,11 @@ int ez8_step(struct ez8_state *state)
 	if (opcode == 13)
 		return ez8_ret_instruction(state, instr);
 	if (opcode == 14) {
-		ez8_clr_com_instruction(state, instr);
+		ez8_indirect_instruction(state, instr);
 		return 0;
 	}
 	if (opcode == 15) {
-		ez8_indirect_instruction(state, instr);
+		ez8_clr_com_instruction(state, instr);
 		return 0;
 	}
 
