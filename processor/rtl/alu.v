@@ -10,7 +10,6 @@ module alu (
     output reg [7:0] result,
     output accum_write,
     output reg_write,
-    output reg_addr,
     output z_write,
     output zout,
     output c_write,
@@ -18,7 +17,7 @@ module alu (
 );
 
 wire [7:0] a = (opcode[3]) ? regvalue : accum;
-wire [7:0] b = (opcode[2]) ? operand : regvalue;
+wire [7:0] b = (opcode[3:2] == 2'b01) ? operand : regvalue;
 wire [7:0] as_res;
 
 addsub as (
@@ -34,8 +33,11 @@ addsub as (
 wire bw_a_sel = (opcode == 4'b1111 && direction) ||
                 (opcode == 4'b0000 && !direction) ||
                  opcode == 4'b0100;
-wire bw_b_sel = (opcode == 4'b0000 || opcode == 4'b0100 || opcode[3:1] == 3'b111);
-wire bw_res;
+wire [1:0] bw_b_sel;
+assign bw_b_sel[0] =
+    (opcode == 4'b0000 || opcode == 4'b0100 || opcode[3:1] == 3'b111);
+assign bw_b_sel[1] = (opcode == 4'b1111 && !selector[2]);
+wire [7:0] bw_res;
 
 bitwise bw (
     .a (a),
@@ -46,7 +48,7 @@ bitwise bw (
     .res (bw_res)
 );
 
-wire shift_res;
+wire [7:0] shift_res;
 
 shifter shift (
     .shift_in (a),
@@ -64,7 +66,7 @@ always @(*) begin
     endcase
 end
 
-wire write_out = (opcode[3:2] == 2'b10 || opcode[3:1] == 3'b110);
+wire write_out = !(opcode[3:2] == 2'b10 || opcode[3:1] == 3'b110);
 assign reg_write = write_out && direction;
 assign accum_write = write_out && !direction;
 assign z_write = (opcode[3] == 1'b0 && opcode[1:0] != 2'b00);

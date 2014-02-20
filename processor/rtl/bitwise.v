@@ -5,13 +5,13 @@ module bitwise (
     input [1:0] op_sel,
 
     input a_sel,
-    input b_sel,
+    input [1:0] b_sel,
 
     output reg [7:0] res
 );
 
-wire real_a = (a_sel) ? b : a;
-wire real_b = (b_sel) ? 8'hff : b;
+wire [7:0] real_a = (a_sel) ? b : a;
+wire [7:0] real_b = (b_sel[1]) ? 8'h00 : (b_sel[0]) ? 8'hff : b;
 
 always @(*) begin
     case (op_sel)

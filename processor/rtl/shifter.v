@@ -8,10 +8,8 @@ module shifter (
     output reg signed [7:0] shift_out
 );
 
-wire copy = shift_in[7];
-
 always @(*) begin
-    if (lr)
+    if (!lr)
         shift_out <= shift_in << shift_by;
     else if (arith)
         shift_out <= shift_in >>> shift_by;
