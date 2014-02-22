@@ -24,7 +24,6 @@ parameter NUM_BANKS = 4;
 reg [7:0] writeaddr_sync;
 reg [7:0] readaddr_sync;
 reg [7:0] writedata_sync;
-reg [7:0] readdata_sync;
 reg write_en_sync;
 
 reg [7:0] status = 8'd0;
@@ -44,7 +43,6 @@ always @(posedge clk) begin
     writeaddr_sync <= writeaddr;
     readaddr_sync <= readaddr;
     writedata_sync <= writedata;
-    readdata_sync <= readdata;
     write_en_sync <= write_en;
     bank_sync <= bank;
 end
