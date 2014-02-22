@@ -11,26 +11,27 @@ module ez8_cpu (
 );
 
 wire [11:0] pc;
-wire [2:0] pc_kill;
-reg  [1:0] kill_shift;
-wire kill_write = pc_kill[2] || kill_shift[1] || pause;
+wire pc_kill;
+wire kill_write = pc_kill || pause;
+
+wire [11:0] goto_addr;
+wire goto;
 
 pc_ctrl pcc (
     .clk (clk),
     .reset (reset),
     .pause (pause),
+
+    .goto_addr (goto_addr),
+    .goto (goto),
+
     .pc_out (pc),
     .kill (pc_kill)
 );
 
-always @(posedge clk) begin
-    if (!pause) begin
-        kill_shift[0] <= pc_kill[0];
-        kill_shift[1] <= kill_shift[0] || pc_kill[1];
-    end
-end
-
 wire [15:0] instr;
+assign goto_addr = instr[11:0];
+assign goto = (instr[15:13] == 3'b100);
 
 instr_mem im (
     .rdclock (clk),
@@ -53,6 +54,7 @@ reg [3:0] opcode;
 reg [7:0] operand;
 reg [2:0] selector;
 reg direction;
+
 
 always @(posedge clk) begin
     opcode <= instr[15:12];

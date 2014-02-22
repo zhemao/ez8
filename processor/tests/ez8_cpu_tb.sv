@@ -36,13 +36,18 @@ initial begin
     instr_writedata = 16'h2100;
     #20000 instr_writeaddr = 12'd4;
     instr_writedata = 16'h6148;
+    #20000 instr_writeaddr = 12'd5;
+    instr_writedata = 16'h800a;
+    #20000 instr_writeaddr = 12'd6;
+    instr_writedata = 16'h6050;
+    #20000 instr_writeaddr = 12'ha;
+    instr_writedata = 16'h6060;
     #20000 instr_write_en = 1'b0;
     pause = 1'b0;
     reset = 1'b1;
     #20000 reset = 1'b0;
-    #140000 pause = 1'b1;
-
-    #20000 assert (accum == 8'd1);
+    #200000 pause = 1'b1;
+    #20000 assert (accum == 8'd7);
 end
 
 endmodule
