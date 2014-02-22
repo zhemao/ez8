@@ -13,7 +13,7 @@ module ez8_cpu (
 wire [11:0] pc;
 wire [2:0] pc_kill;
 reg  [1:0] kill_shift;
-wire kill_write = pc_kill[2] || kill_shift[1];
+wire kill_write = pc_kill[2] || kill_shift[1] || pause;
 
 pc_ctrl pcc (
     .clk (clk),
@@ -24,14 +24,18 @@ pc_ctrl pcc (
 );
 
 always @(posedge clk) begin
-    kill_shift[0] <= pc_kill[0];
-    kill_shift[1] <= kill_shift[0] || pc_kill[1];
+    if (!pause) begin
+        kill_shift[0] <= pc_kill[0];
+        kill_shift[1] <= kill_shift[0] || pc_kill[1];
+    end
 end
 
 wire [15:0] instr;
 
 instr_mem im (
-    .clock (clk),
+    .rdclock (clk),
+    .wrclock (clk),
+    .rdclocken (!pause),
     .rdaddress (pc),
     .q (instr),
     .wraddress (instr_writeaddr),
@@ -69,6 +73,8 @@ assign accum_out = accum;
 mem_ctrl mc (
     .clk (clk),
     .reset (reset),
+    .pause (pause),
+
     .zin (z),
     .z_write (z_write && !kill_write),
     .cin (c_backward),

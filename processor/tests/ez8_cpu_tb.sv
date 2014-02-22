@@ -40,9 +40,9 @@ initial begin
     pause = 1'b0;
     reset = 1'b1;
     #20000 reset = 1'b0;
-    #80000 pause = 1'b1;
+    #140000 pause = 1'b1;
 
-    #60000 assert (accum == 8'd1);
+    #20000 assert (accum == 8'd1);
 end
 
 endmodule

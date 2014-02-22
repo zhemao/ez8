@@ -34,6 +34,7 @@
 module gpmem (
 	clock,
 	data,
+	enable,
 	rdaddress,
 	wraddress,
 	wren,
@@ -41,6 +42,7 @@ module gpmem (
 
 	input	  clock;
 	input	[7:0]  data;
+	input	  enable;
 	input	[7:0]  rdaddress;
 	input	[7:0]  wraddress;
 	input	  wren;
@@ -49,6 +51,7 @@ module gpmem (
 // synopsys translate_off
 `endif
 	tri1	  clock;
+	tri1	  enable;
 	tri0	  wren;
 `ifndef ALTERA_RESERVED_QIS
 // synopsys translate_on
@@ -67,10 +70,10 @@ endmodule
 // Retrieval info: PRIVATE: BYTE_ENABLE_B NUMERIC "0"
 // Retrieval info: PRIVATE: BYTE_SIZE NUMERIC "8"
 // Retrieval info: PRIVATE: BlankMemory NUMERIC "1"
-// Retrieval info: PRIVATE: CLOCK_ENABLE_INPUT_A NUMERIC "0"
-// Retrieval info: PRIVATE: CLOCK_ENABLE_INPUT_B NUMERIC "0"
-// Retrieval info: PRIVATE: CLOCK_ENABLE_OUTPUT_A NUMERIC "0"
-// Retrieval info: PRIVATE: CLOCK_ENABLE_OUTPUT_B NUMERIC "0"
+// Retrieval info: PRIVATE: CLOCK_ENABLE_INPUT_A NUMERIC "1"
+// Retrieval info: PRIVATE: CLOCK_ENABLE_INPUT_B NUMERIC "1"
+// Retrieval info: PRIVATE: CLOCK_ENABLE_OUTPUT_A NUMERIC "1"
+// Retrieval info: PRIVATE: CLOCK_ENABLE_OUTPUT_B NUMERIC "1"
 // Retrieval info: PRIVATE: CLRdata NUMERIC "0"
 // Retrieval info: PRIVATE: CLRq NUMERIC "0"
 // Retrieval info: PRIVATE: CLRrdaddress NUMERIC "0"
@@ -116,13 +119,13 @@ endmodule
 // Retrieval info: PRIVATE: WRADDR_ACLR_B NUMERIC "0"
 // Retrieval info: PRIVATE: WRADDR_REG_B NUMERIC "0"
 // Retrieval info: PRIVATE: WRCTRL_ACLR_B NUMERIC "0"
-// Retrieval info: PRIVATE: enable NUMERIC "0"
+// Retrieval info: PRIVATE: enable NUMERIC "1"
 // Retrieval info: PRIVATE: rden NUMERIC "0"
 // Retrieval info: LIBRARY: altera_mf altera_mf.altera_mf_components.all
 // Retrieval info: CONSTANT: ADDRESS_ACLR_B STRING "NONE"
 // Retrieval info: CONSTANT: ADDRESS_REG_B STRING "CLOCK0"
-// Retrieval info: CONSTANT: CLOCK_ENABLE_INPUT_A STRING "BYPASS"
-// Retrieval info: CONSTANT: CLOCK_ENABLE_INPUT_B STRING "BYPASS"
+// Retrieval info: CONSTANT: CLOCK_ENABLE_INPUT_A STRING "NORMAL"
+// Retrieval info: CONSTANT: CLOCK_ENABLE_INPUT_B STRING "NORMAL"
 // Retrieval info: CONSTANT: CLOCK_ENABLE_OUTPUT_B STRING "BYPASS"
 // Retrieval info: CONSTANT: INTENDED_DEVICE_FAMILY STRING "Cyclone V"
 // Retrieval info: CONSTANT: LPM_TYPE STRING "altsyncram"
@@ -141,6 +144,7 @@ endmodule
 // Retrieval info: CONSTANT: WIDTH_BYTEENA_A NUMERIC "1"
 // Retrieval info: USED_PORT: clock 0 0 0 0 INPUT VCC "clock"
 // Retrieval info: USED_PORT: data 0 0 8 0 INPUT NODEFVAL "data[7..0]"
+// Retrieval info: USED_PORT: enable 0 0 0 0 INPUT VCC "enable"
 // Retrieval info: USED_PORT: q 0 0 8 0 OUTPUT NODEFVAL "q[7..0]"
 // Retrieval info: USED_PORT: rdaddress 0 0 8 0 INPUT NODEFVAL "rdaddress[7..0]"
 // Retrieval info: USED_PORT: wraddress 0 0 8 0 INPUT NODEFVAL "wraddress[7..0]"
@@ -148,6 +152,7 @@ endmodule
 // Retrieval info: CONNECT: @address_a 0 0 8 0 wraddress 0 0 8 0
 // Retrieval info: CONNECT: @address_b 0 0 8 0 rdaddress 0 0 8 0
 // Retrieval info: CONNECT: @clock0 0 0 0 0 clock 0 0 0 0
+// Retrieval info: CONNECT: @clocken0 0 0 0 0 enable 0 0 0 0
 // Retrieval info: CONNECT: @data_a 0 0 8 0 data 0 0 8 0
 // Retrieval info: CONNECT: @wren_a 0 0 0 0 wren 0 0 0 0
 // Retrieval info: CONNECT: q 0 0 8 0 @q_b 0 0 8 0

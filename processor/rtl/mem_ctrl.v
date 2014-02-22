@@ -1,6 +1,7 @@
 module mem_ctrl (
     input clk,
     input reset,
+    input pause,
 
     input zin,
     input z_write,
@@ -40,11 +41,13 @@ wire [1:0] bank = (writeaddr == 8'h01 && write_en) ?
 reg [1:0] bank_sync;
 
 always @(posedge clk) begin
-    writeaddr_sync <= writeaddr;
-    readaddr_sync <= readaddr;
-    writedata_sync <= writedata;
-    write_en_sync <= write_en;
-    bank_sync <= bank;
+    if (!pause) begin
+        writeaddr_sync <= writeaddr;
+        readaddr_sync <= readaddr;
+        writedata_sync <= writedata;
+        write_en_sync <= write_en;
+        bank_sync <= bank;
+    end
 end
 
 wire [7:0] gp_outputs [0:NUM_BANKS-1];
@@ -61,7 +64,8 @@ for (i = 0; i < NUM_BANKS; i = i + 1) begin : MEM
         .rdaddress (gp_rdaddr),
         .wraddress (gp_wraddr),
         .wren (gp_wren),
-        .q (gp_outputs[i])
+        .q (gp_outputs[i]),
+        .enable (!pause)
     );
 end
 endgenerate

@@ -14,9 +14,7 @@ always @(posedge clk) begin
     if (reset) begin
         kill <= 3'b110;
         pc <= 12'd0;
-    end else if (pause) begin
-        kill <= 3'b001;
-    end else begin
+    end else if (!pause) begin
         kill <= 3'b000;
         pc <= pc + 1'b1;
     end
