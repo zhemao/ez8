@@ -53,16 +53,14 @@ set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_RO
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_global_assignment -name EDA_TIME_SCALE "1 ps" -section_id eda_simulation
 set_global_assignment -name EDA_TEST_BENCH_ENABLE_STATUS TEST_BENCH_MODE -section_id eda_simulation
-set_global_assignment -name EDA_NATIVELINK_SIMULATION_TEST_BENCH mem_ctrl_tb -section_id eda_simulation
+set_global_assignment -name EDA_NATIVELINK_SIMULATION_TEST_BENCH ez8_cpu_tb -section_id eda_simulation
 set_global_assignment -name EDA_TEST_BENCH_NAME alu_tb -section_id eda_simulation
 set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id alu_tb
 set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME alu_tb -section_id alu_tb
-set_global_assignment -name EDA_NATIVELINK_SIMULATION_SETUP_SCRIPT tests/mem_ctrl_sim_setup.tcl -section_id eda_simulation
-set_global_assignment -name EDA_TEST_BENCH_FILE tests/alu_tb.sv -section_id alu_tb
+set_global_assignment -name EDA_NATIVELINK_SIMULATION_SETUP_SCRIPT tests/ez8_cpu_sim_setup.tcl -section_id eda_simulation
 set_global_assignment -name EDA_TEST_BENCH_NAME mem_ctrl_tb -section_id eda_simulation
 set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id mem_ctrl_tb
 set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME mem_ctrl_tb -section_id mem_ctrl_tb
-set_global_assignment -name EDA_TEST_BENCH_FILE tests/mem_ctrl_tb.sv -section_id mem_ctrl_tb
 set_global_assignment -name VERILOG_FILE rtl/pc_ctrl.v
 set_global_assignment -name VERILOG_FILE rtl/ez8_cpu.v
 set_global_assignment -name VERILOG_FILE rtl/mem_ctrl.v
@@ -74,4 +72,10 @@ set_global_assignment -name VERILOG_FILE rtl/addsub.v
 set_global_assignment -name VERILOG_FILE rtl/sockit_top.v
 set_global_assignment -name QIP_FILE rtl/megafunctions/gpmem.qip
 set_global_assignment -name QIP_FILE rtl/megafunctions/instr_mem.qip
+set_global_assignment -name EDA_TEST_BENCH_NAME ez8_cpu_tb -section_id eda_simulation
+set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id ez8_cpu_tb
+set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME ez8_cpu_tb -section_id ez8_cpu_tb
+set_global_assignment -name EDA_TEST_BENCH_FILE tests/alu_tb.sv -section_id alu_tb
+set_global_assignment -name EDA_TEST_BENCH_FILE tests/mem_ctrl_tb.sv -section_id mem_ctrl_tb
+set_global_assignment -name EDA_TEST_BENCH_FILE tests/ez8_cpu_tb.sv -section_id ez8_cpu_tb
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
