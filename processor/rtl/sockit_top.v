@@ -2,35 +2,21 @@ module sockit_top (
     input OSC_50_B3B
 );
 
-alu a (
-    .opcode (4'd0),
-    .operand (8'd0),
-    .regvalue (8'd0),
-    .accum (8'd0),
-    .selector (3'd0),
-    .direction (1'b0),
-    .cin (1'b0)
-);
+wire cpu_reset;
+wire [11:0] instr_writeaddr = 12'd0;
+wire [15:0] instr_writedata = 16'd0;
+wire instr_write_en = 1'b0;
+wire [7:0] accum;
 
-skip_calc sc (
-    .opcode (2'b0),
-    .reg_value (8'd0),
-    .accum_value (8'd0),
-    .selector (3'b0),
-    .direction (1'b0)
-);
-
-mem_ctrl mc (
+ez8_cpu cpu (
     .clk (OSC_50_B3B),
-    .zin (1'b0),
-    .z_write (1'b0),
-    .cin (1'b0),
-    .c_write (1'b0),
-    .writeaddr (8'd0),
-    .writedata (8'd0),
-    .readaddr (8'd0),
-    .accum_in (8'd0),
-    .accum_write (1'b0)
+    .reset (cpu_reset),
+
+    .instr_writeaddr (instr_writeaddr),
+    .instr_writedata (instr_writedata),
+    .instr_write_en  (instr_write_en),
+
+    .accum_out (accum)
 );
 
 endmodule
