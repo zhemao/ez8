@@ -1,5 +1,6 @@
 module mem_ctrl (
     input clk,
+    input reset,
 
     input zin,
     input z_write,
@@ -14,7 +15,6 @@ module mem_ctrl (
     input [7:0] readaddr,
     output reg [7:0] readdata,
 
-    input [7:0] accum_in,
     input accum_write,
     output [7:0] accum_out
 );
@@ -89,8 +89,10 @@ always @(*) begin
 end
 
 always @(posedge clk) begin
-    if (accum_write)
-        accum <= accum_in;
+    if (reset)
+        accum <= 8'h00;
+    else if (accum_write)
+        accum <= writedata;
 
     if (write_en) begin
         if (writeaddr == 8'd1)

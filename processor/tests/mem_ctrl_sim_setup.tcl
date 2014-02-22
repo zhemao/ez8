@@ -3,7 +3,6 @@ add wave -radix hexadecimal writeaddr
 add wave -radix hexadecimal readaddr
 add wave -radix unsigned writedata
 add wave -radix unsigned readdata
-add wave -radix unsigned accum_in
 add wave -radix unsigned accum_out
 add wave accum_write
 add wave write_en

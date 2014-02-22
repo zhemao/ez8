@@ -13,7 +13,6 @@ reg write_en;
 reg [7:0] readaddr;
 wire [7:0] readdata;
 
-reg [7:0] accum_in;
 reg accum_write;
 wire [7:0] accum_out;
 
@@ -29,7 +28,6 @@ mem_ctrl mc (
     .write_en (write_en),
     .readaddr (readaddr),
     .readdata (readdata),
-    .accum_in (accum_in),
     .accum_write (accum_write),
     .accum_out (accum_out)
 );
@@ -91,7 +89,7 @@ initial begin
     #20000 assert (readdata == 8'b00100011);
     z_write = 1'b0;
 
-    accum_in = 8'd20;
+    writedata = 8'd20;
     accum_write = 1'b1;
     #20000 assert (accum_out == 8'd20);
     accum_write = 1'b0;
