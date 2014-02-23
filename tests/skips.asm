@@ -22,4 +22,4 @@ main:
   ret 0      ; 21
 
 error:
-  ret 1      ; 24
+  ret 1      ; 22
