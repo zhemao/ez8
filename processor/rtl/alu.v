@@ -13,7 +13,8 @@ module alu (
     output z_write,
     output zout,
     output c_write,
-    output cout
+    output cout,
+    output skip
 );
 
 wire [7:0] a = (opcode[3]) ? regvalue : accum;
@@ -72,5 +73,14 @@ assign accum_write = write_out && !direction;
 assign z_write = (opcode[3] == 1'b0 && opcode[1:0] != 2'b00);
 assign c_write = (opcode[3] == 1'b0 && opcode[1:0] == 2'b10);
 assign zout = (result == 8'd0);
+
+skip_calc sc (
+    .opcode (opcode),
+    .reg_value (regvalue),
+    .accum_value (accum),
+    .selector (selector),
+    .direction (direction),
+    .skip (skip)
+);
 
 endmodule

@@ -7,6 +7,8 @@ module ez8_cpu (
     input [15:0] instr_writedata,
     input instr_write_en,
 
+    output stopped,
+    output error,
     output [7:0] accum_out
 );
 
@@ -16,6 +18,9 @@ wire kill_write = pc_kill || pause;
 
 wire [11:0] goto_addr;
 wire goto;
+wire call;
+wire skip;
+wire ret;
 
 pc_ctrl pcc (
     .clk (clk),
@@ -24,6 +29,11 @@ pc_ctrl pcc (
 
     .goto_addr (goto_addr),
     .goto (goto),
+    .call (call),
+    .skip (skip),
+    .ret (ret),
+    .error (error),
+    .stopped (stopped),
 
     .pc_out (pc),
     .kill (pc_kill)
@@ -32,6 +42,8 @@ pc_ctrl pcc (
 wire [15:0] instr;
 assign goto_addr = instr[11:0];
 assign goto = (instr[15:13] == 3'b100);
+assign call = (instr[15:12] == 4'b1001);
+assign ret = (instr[15:12] == 4'b1101);
 
 instr_mem im (
     .rdclock (clk),
@@ -109,7 +121,8 @@ alu alu0 (
     .z_write (z_write),
     .zout (z),
     .c_write (c_write),
-    .cout (c_backward)
+    .cout (c_backward),
+    .skip (skip)
 );
 
 endmodule
