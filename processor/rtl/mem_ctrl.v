@@ -103,29 +103,34 @@ always @(*) begin
 end
 
 always @(posedge clk) begin
-    if (reset)
+    if (reset) begin
         accum <= 8'h00;
-    else if (accum_write)
-        accum <= writedata;
+        status <= 8'h00;
+        intcon <= 8'h00;
+        intstatus <= 8'h00;
+    end else begin
+        if (accum_write)
+            accum <= writedata;
 
-    if (write_en) begin
-        if (writeaddr == 8'd1)
-            status <= writedata;
-        else if (writeaddr == 8'd2)
-            intcon <= writedata;
-        else if (writeaddr == 8'd3)
-            intstatus <= writedata;
-        else if (writeaddr[7:2] == 6'd1)
-            indirects[writeaddr[1:0]] <= writedata;
-    end
+        if (write_en) begin
+            if (writeaddr == 8'd1)
+                status <= writedata;
+            else if (writeaddr == 8'd2)
+                intcon <= writedata;
+            else if (writeaddr == 8'd3)
+                intstatus <= writedata;
+            else if (writeaddr[7:2] == 6'd1)
+                indirects[writeaddr[1:0]] <= writedata;
+        end
 
-    if (!(write_en && writeaddr == 8'd1)) begin
-        if (z_write)
-            status[0] <= zin;
-        if (c_write)
-            status[1] <= cin;
-        if (gie_write)
-            status[7] <= gie_write;
+        if (!(write_en && writeaddr == 8'd1)) begin
+            if (z_write)
+                status[0] <= zin;
+            if (c_write)
+                status[1] <= cin;
+            if (gie_write)
+                status[7] <= gie_write;
+        end
     end
 end
 
