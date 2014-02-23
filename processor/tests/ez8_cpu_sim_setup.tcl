@@ -18,4 +18,4 @@ add wave cpu/ret
 add wave cpu/call
 add wave cpu/skip
 
-run 3000 ns
+run 6 us
