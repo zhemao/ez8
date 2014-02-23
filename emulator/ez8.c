@@ -215,7 +215,12 @@ static int ez8_skip_instruction(struct ez8_state *state, uint16_t instr)
 
 static int ez8_ret_instruction(struct ez8_state *state, uint16_t instr)
 {
-	uint16_t retint = (instr >> 11) & 0x1;
+	uint16_t operand = (instr >> 4) & 0xff;
+	uint16_t retint = (instr >> 3) & 0x1;
+	uint16_t direction = instr & 0x1;
+
+	if (!direction)
+		state->accum = operand;
 
 	if (ez8_stack_empty(state))
 		return -1;

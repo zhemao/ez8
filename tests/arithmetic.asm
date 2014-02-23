@@ -58,9 +58,7 @@ main:
   subl 0x5c     ; 51
   skbs STATUS 0 ; 52
   goto error    ; 53
-  set 0         ; 54
-  ret           ; 55
+  ret 0         ; 54
 
 error:
-  set 1         ; 56
-  ret           ; 57
+  ret 1         ; 55

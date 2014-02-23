@@ -28,9 +28,7 @@ main:
   skbs STATUS 0 ; 25
   goto error    ; 26
 
-  set 0         ; 27
-  ret           ; 28
+  ret 0         ; 27
 
 error:
-  set 1         ; 29
-  ret           ; 30
+  ret 1         ; 28

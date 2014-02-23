@@ -73,8 +73,10 @@ instruction:
   | SKBS INT_LIT { Skbs(AddrNone, $2, false) }
   | SKBC addr INT_LIT { Skbc($2, $3, true) }
   | SKBC INT_LIT { Skbc(AddrNone, $2, false) }
-  | RET { Ret }
-  | RETINT { Retint }
+  | RET { Ret(0, true) }
+  | RETINT { Retint(0, true) }
+  | RET INT_LIT { Ret($2, false) }
+  | RETINT INT_LIT { Retint($2, false) }
   | CLR { Clr(AddrNone, false) }
   | CLR addr { Clr($2, true) }
   | COM { Com(AddrNone, false) }

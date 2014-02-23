@@ -19,9 +19,7 @@ main:
   put 0x21   ; 18
   sklez 0x21 ; 19
   goto error ; 20
-  set 0      ; 21
-  ret        ; 22
+  ret 0      ; 21
 
 error:
-  set 1      ; 23
-  ret        ; 24
+  ret 1      ; 24
