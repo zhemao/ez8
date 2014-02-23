@@ -1,4 +1,5 @@
-all: arithmetic.hex skips.hex indirect.hex
+all: arithmetic.hex skips.hex indirect.hex \
+	arithmetic.bin skips.bin indirect.bin
 
 test: test_arithmetic test_skips test_indirect
 

@@ -27,7 +27,25 @@ ez8_cpu cpu (
 
 always #10000 clk = !clk;
 
+integer fd;
+
 initial begin
+    pause = 1'b1;
+    instr_write_en = 1'b1;
+    instr_writeaddr = 12'd0;
+
+    fd = $fopen("../../../tests/arithmetic.bin", "r");
+
+    if (fd == 0) begin
+        $error("Invalid file");
+    end
+
+    while ($fread(instr_writedata, fd)) begin
+        #20000 instr_writeaddr = instr_writeaddr + 1'b1;
+    end
+
+    $fclose(fd);
+
     reset = 1'b1;
     pause = 1'b0;
     instr_write_en = 1'b0;

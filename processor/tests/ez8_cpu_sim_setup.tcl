@@ -4,6 +4,9 @@ add wave pause
 add wave stopped
 add wave {error}
 
+add wave -radix unsigned instr_writeaddr
+add wave -radix hexadecimal instr_writedata
+
 add wave -radix hexadecimal cpu/pc
 add wave -radix hexadecimal accum
 add wave -radix hexadecimal cpu/instr
@@ -13,4 +16,4 @@ add wave cpu/goto
 add wave cpu/ret
 add wave cpu/call
 
-run 1200 ns
+run 3000 ns
