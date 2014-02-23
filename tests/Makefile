@@ -1,4 +1,6 @@
-all: arithmetic.bin skips.bin indirect.bin banks.bin
+simulation: arithmetic.bin skips.bin indirect.bin banks.bin
+
+fpga: led_switch.hex
 
 test: test_arithmetic test_skips test_indirect test_banks
 
