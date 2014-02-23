@@ -32,3 +32,5 @@ obj
 *.sopcinfo
 
 *.ver
+*.hex
+/*.qip
