@@ -30,3 +30,5 @@ steps.
    programmer and program the FPGA through the USB Blaster.
 4. The program should now be running. Flip a switch and it should flip the
    corresponding LED on and off.
+
+Detailed documentation is available in the "docs/" folder.
