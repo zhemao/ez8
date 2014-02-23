@@ -14,7 +14,11 @@ module ez8_cpu (
 
 wire [11:0] pc;
 wire pc_kill;
-wire kill_write = pc_kill || pause;
+wire pc_stopped;
+wire kill_write = pc_kill || pause || pc_stopped;
+
+assign stopped = pc_stopped;
+wire running = !pause && !pc_stopped;
 
 wire [11:0] goto_addr;
 wire goto;
@@ -33,7 +37,7 @@ pc_ctrl pcc (
     .skip (skip),
     .ret (ret),
     .error (error),
-    .stopped (stopped),
+    .stopped (pc_stopped),
 
     .pc_out (pc),
     .kill (pc_kill)
@@ -48,7 +52,7 @@ assign ret = (instr[15:12] == 4'b1101);
 instr_mem im (
     .rdclock (clk),
     .wrclock (clk),
-    .rdclocken (!pause),
+    .rdclocken (running),
     .rdaddress (pc),
     .q (instr),
     .wraddress (instr_writeaddr),
@@ -87,7 +91,7 @@ assign accum_out = accum;
 mem_ctrl mc (
     .clk (clk),
     .reset (reset),
-    .pause (pause),
+    .pause (!running),
 
     .zin (z),
     .z_write (z_write && !kill_write),
