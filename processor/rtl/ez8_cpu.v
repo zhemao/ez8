@@ -7,6 +7,10 @@ module ez8_cpu (
     input [15:0] instr_writedata,
     input instr_write_en,
 
+    input  [3:0] keys,
+    input  [3:0] switches,
+    output [3:0] leds,
+
     output stopped,
     output error,
     output [7:0] accum_out
@@ -90,6 +94,27 @@ wire [7:0] accum;
 
 assign accum_out = accum;
 
+wire [7:0] io_writedata;
+wire [4:0] io_writeaddr;
+wire io_write_en;
+wire [7:0] io_readdata;
+wire [4:0] io_readaddr;
+
+io_ctrl io (
+    .clk (clk),
+    .reset (reset),
+
+    .readaddr (io_readaddr),
+    .readdata (io_readdata),
+    .writeaddr (io_writeaddr),
+    .writedata (io_writedata),
+    .write_en (io_write_en),
+
+    .switches (switches),
+    .keys (keys),
+    .leds (leds)
+);
+
 mem_ctrl mc (
     .clk (clk),
     .reset (reset),
@@ -106,9 +131,14 @@ mem_ctrl mc (
     .writeaddr (operand),
     .writedata (mem_writedata),
     .write_en (mem_write_en && !kill_write),
-
     .readaddr (mem_readaddr),
     .readdata (mem_readdata),
+
+    .io_writeaddr (io_writeaddr),
+    .io_writedata (io_writedata),
+    .io_write_en (io_write_en),
+    .io_readaddr (io_readaddr),
+    .io_readdata (io_readdata),
 
     .accum_write (accum_write && !kill_write),
     .accum_out (accum)

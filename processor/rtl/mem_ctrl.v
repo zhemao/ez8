@@ -18,6 +18,12 @@ module mem_ctrl (
     input [7:0] readaddr,
     output reg [7:0] readdata,
 
+    output [4:0] io_readaddr,
+    input  [7:0] io_readdata,
+    output [4:0] io_writeaddr,
+    output [7:0] io_writedata,
+    output io_write_en,
+
     input accum_write,
     output [7:0] accum_out
 );
@@ -52,6 +58,11 @@ always @(posedge clk) begin
     end
 end
 
+assign io_readaddr = {bank, readaddr[2:0]};
+assign io_writeaddr = {bank, writeaddr[2:0]};
+assign io_writedata = writedata;
+assign io_write_en = (writeaddr[7:3] == 5'd1) && write_en;
+
 wire [7:0] gp_outputs [0:NUM_BANKS-1];
 
 genvar i;
@@ -85,9 +96,8 @@ always @(*) begin
         readdata <= intstatus;
     else if (readaddr_sync[7:2] == 6'd1)
         readdata <= indirects[readaddr_sync[1:0]];
-    // IOMEM not implemented yet
     else if (readaddr_sync[7:3] == 5'd1)
-        readdata <= 8'd0;
+        readdata <= io_readdata;
     else
         readdata <= gp_outputs[bank_sync];
 end
