@@ -9,7 +9,6 @@
 *.done
 *.jdi
 *.qdf
-*.cdf
 *.pin
 *.pof
 *.qws
