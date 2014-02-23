@@ -52,6 +52,7 @@ always @(posedge clk) begin
             // but the last instruction was issued improperly
             // so send a kill signal to cancel
             kill_shift <= 2'b10;
+            pc <= pc + 1'b1;
         end else if (goto && !kill_shift[0]) begin
             if (call) begin
                 if (full) begin
