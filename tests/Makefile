@@ -1,7 +1,6 @@
-all: arithmetic.hex skips.hex indirect.hex \
-	arithmetic.bin skips.bin indirect.bin
+all: arithmetic.bin skips.bin indirect.bin banks.bin
 
-test: test_arithmetic test_skips test_indirect
+test: test_arithmetic test_skips test_indirect test_banks
 
 test_%: %.bin
 	../emulator/ez8_emu $<
