@@ -8,6 +8,10 @@ This repository contains an assembler written in OCaml, an emulator written in
 C, some test assembly programs, and a three-stage pipelined processor written
 in Verilog.
 
+The RTL description is designed to be used on the Arrow SoCKit. You may be
+able to port it to other Cyclone V-based boards, such as the DE1-SoC board,
+but you will have to change the pin assignments in the settings file.
+
 ## Instructions for Verification
 
 To verify that the processor is functioning correctly. Perform the following
