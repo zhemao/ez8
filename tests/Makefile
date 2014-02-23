@@ -10,3 +10,6 @@ test_%: %.bin
 
 %.hex: %.bin
 	srec_cat $< -binary -o $@ -intel
+
+clean:
+	rm -f *.bin *.hex
