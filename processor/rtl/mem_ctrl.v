@@ -8,6 +8,8 @@ module mem_ctrl (
     input cin,
     input c_write,
     output cout,
+    input giein,
+    input gie_write,
 
     input [7:0] writeaddr,
     input [7:0] writedata,
@@ -112,6 +114,8 @@ always @(posedge clk) begin
             status[0] <= zin;
         if (c_write)
             status[1] <= cin;
+        if (gie_write)
+            status[7] <= gie_write;
     end
 end
 

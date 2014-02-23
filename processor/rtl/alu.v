@@ -14,6 +14,8 @@ module alu (
     output zout,
     output c_write,
     output cout,
+    output gie_write,
+    output gieout,
     output skip
 );
 
@@ -33,10 +35,12 @@ addsub as (
 
 wire bw_a_sel = (opcode == 4'b1111 && direction) ||
                 (opcode == 4'b0000 && !direction) ||
-                 opcode == 4'b0100;
+                 opcode == 4'b0100 ||
+                 opcode == 4'b1101;
 wire [1:0] bw_b_sel;
 assign bw_b_sel[0] =
-    (opcode == 4'b0000 || opcode == 4'b0100 || opcode[3:1] == 3'b111);
+    (opcode == 4'b0000 || opcode == 4'b0100 ||
+     opcode == 4'b1101 || opcode[3:1] == 3'b111);
 assign bw_b_sel[1] = (opcode == 4'b1111 && !selector[2]);
 wire [7:0] bw_res;
 
@@ -67,12 +71,14 @@ always @(*) begin
     endcase
 end
 
-wire write_out = !(opcode[3:2] == 2'b10 || opcode[3:1] == 3'b110);
+wire write_out = !(opcode[3:2] == 2'b10 || opcode == 4'b1100 && !direction);
 assign reg_write = write_out && direction;
 assign accum_write = write_out && !direction;
 assign z_write = (opcode[3] == 1'b0 && opcode[1:0] != 2'b00);
 assign c_write = (opcode[3] == 1'b0 && opcode[1:0] == 2'b10);
 assign zout = (result == 8'd0);
+assign gieout = (opcode == 4'b1101 && selector[2] == 1'b1);
+assign gie_write = gieout;
 
 skip_calc sc (
     .opcode (opcode),

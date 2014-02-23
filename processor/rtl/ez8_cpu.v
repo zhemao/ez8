@@ -65,6 +65,8 @@ wire c_forward;
 wire c_backward;
 wire z_write;
 wire c_write;
+wire gie_write;
+wire gie;
 
 reg [3:0] opcode;
 reg [7:0] operand;
@@ -98,6 +100,8 @@ mem_ctrl mc (
     .cin (c_backward),
     .c_write (c_write && !kill_write),
     .cout (c_forward),
+    .giein (gie),
+    .gie_write (gie_write),
 
     .writeaddr (operand),
     .writedata (mem_writedata),
@@ -126,6 +130,8 @@ alu alu0 (
     .zout (z),
     .c_write (c_write),
     .cout (c_backward),
+    .gieout (gie),
+    .gie_write (gie_write),
     .skip (skip)
 );
 
