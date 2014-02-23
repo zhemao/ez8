@@ -19,3 +19,14 @@ steps.
    into machine code.
 3. Open the "processor/ez8cpu.qpf" project in Quartus,
    run "Analysis and Synthesis", then run RTL simulation.
+
+## Instructions for Running on FPGA
+
+1. Build the assembler as above.
+2. Go into the "tests" directory and run `make fpga` to build the
+   FPGA test program. You will need to have [SRecord](http://srecord.sourceforge.net/)
+   installed in order to do this.
+3. Open the project file in Quartus, run the Assembler, then open the
+   programmer and program the FPGA through the USB Blaster.
+4. The program should now be running. Flip a switch and it should flip the
+   corresponding LED on and off.
