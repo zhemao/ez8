@@ -84,8 +84,7 @@ let encode_instruction labels instruction =
             [12, 4; addr_to_bits addr; bitnum, 3; bool_to_bits dir]
       | Ret(lit, dir) -> assemble_instruction
             [13, 4; lit, 8; 0, 3; bool_to_bits dir]
-      | Retint(lit, dir) -> assemble_instruction
-            [13, 4; lit, 8; 4, 3; bool_to_bits dir]
+      | Retint -> 0xd009
       | Iget(lit, addr) -> assemble_instruction
             [14, 4; lit, 8; indirect_addr_to_bits addr; 0, 1]
       | Iput(lit, addr) -> assemble_instruction
