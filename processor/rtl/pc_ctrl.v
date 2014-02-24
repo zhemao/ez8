@@ -60,37 +60,7 @@ always @(posedge clk) begin
         pop <= 1'b0;
         save_accum <= 1'b0;
 
-        if (interrupt) begin
-            if (skip && !kill_shift[1]) begin
-                kill_shift <= 2'b11;
-                interrupt_save <= 1'b1;
-            end else if (goto && !kill_shift[0]) begin
-                if (call) begin
-                    if (full) begin
-                        error <= 1'b1;
-                        stopped <= 1'b1;
-                    end else begin
-                        stack_input <= pc;
-                        push <= 1'b1;
-                    end
-                end
-                pc <= goto_addr;
-                kill_shift <= {kill_shift[0], 1'b1};
-                interrupt_save <= 1'b1;
-            end else if (ret && !kill_shift[0]) begin
-                if (empty)
-                    stop_wait <= 1'b1;
-                else begin
-                    pc <= stack_output;
-                    pop <= 1'b1;
-                    interrupt_save <= 1'b1;
-                end
-                kill_shift <= {kill_shift[0], 1'b1};
-            end else begin
-                kill_shift <= {kill_shift[0], 1'b1};
-                interrupt_wait <= 1'b1;
-            end
-        end else if (interrupt_save) begin
+        if (interrupt_save) begin
             if (full) begin
                 error <= 1'b1;
                 stopped <= 1'b1;
@@ -100,7 +70,7 @@ always @(posedge clk) begin
             end
             pc <= INTERRUPT_VECTOR;
             interrupt_save <= 1'b0;
-            kill_shift <= {kill_shift[0], 1'b0};
+            kill_shift <= {kill_shift[0], 1'b1};
             save_accum <= 1'b1;
         end else if (interrupt_wait) begin
             if (skip && !kill_shift[1])
@@ -112,8 +82,13 @@ always @(posedge clk) begin
             // pc is at the correct instruction,
             // but the last instruction was issued improperly
             // so send a kill signal to cancel
-            kill_shift <= 2'b10;
-            pc <= pc + 1'b1;
+            if (interrupt) begin
+                kill_shift <= 2'b11;
+                interrupt_save <= 1'b1;
+            end else begin
+                kill_shift <= 2'b10;
+                pc <= pc + 1'b1;
+            end
         end else if (goto && !kill_shift[0]) begin
             if (call) begin
                 if (full) begin
@@ -129,6 +104,8 @@ always @(posedge clk) begin
             end
             kill_shift <= {kill_shift[0], 1'b1};
             pc <= goto_addr;
+            if (interrupt)
+                interrupt_save <= 1'b1;
         end else if (ret && !kill_shift[0]) begin
             if (empty)
                 // processor exited
@@ -137,14 +114,21 @@ always @(posedge clk) begin
             else begin
                 pc <= stack_output;
                 pop <= 1'b1;
+                if (interrupt)
+                    interrupt_save <= 1'b1;
             end
             kill_shift <= {kill_shift[0], 1'b1};
         end else if (stop_wait) begin
             stopped <= 1'b1;
             stop_wait <= 1'b0;
         end else begin
-            kill_shift <= {kill_shift[0], 1'b0};
-            pc <= pc + 1'b1;
+            if (interrupt) begin
+                kill_shift <= {kill_shift[0], 1'b1};
+                interrupt_wait <= 1'b1;
+            end else begin
+                kill_shift <= {kill_shift[0], 1'b0};
+                pc <= pc + 1'b1;
+            end
         end
     end
 end
