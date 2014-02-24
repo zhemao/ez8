@@ -236,7 +236,7 @@ Set the program counter to the value on the top of the stack and pop the stack.
 
 Syntax: `retint`
 
-Encoding: 1101000000000001
+Encoding: 1101000000001001
 
 Sets the program counter to the value popped off the stack. Also restores
 accumulator value saved on interrupt, clears the INTCON register, and sets GIE
