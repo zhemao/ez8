@@ -29,6 +29,8 @@ wire goto;
 wire call;
 wire skip;
 wire ret;
+wire save_accum;
+wire interrupt;
 
 pc_ctrl pcc (
     .clk (clk),
@@ -40,6 +42,8 @@ pc_ctrl pcc (
     .call (call),
     .skip (skip),
     .ret (ret),
+    .interrupt (interrupt),
+    .save_accum (save_accum),
     .error (error),
     .stopped (pc_stopped),
 
@@ -69,8 +73,6 @@ wire c_forward;
 wire c_backward;
 wire z_write;
 wire c_write;
-wire gie_write;
-wire gie;
 
 reg [3:0] opcode;
 reg [7:0] operand;
@@ -99,6 +101,7 @@ wire [4:0] io_writeaddr;
 wire io_write_en;
 wire [7:0] io_readdata;
 wire [4:0] io_readaddr;
+wire [7:0] io_interrupts;
 
 io_ctrl io (
     .clk (clk),
@@ -109,11 +112,14 @@ io_ctrl io (
     .writeaddr (io_writeaddr),
     .writedata (io_writedata),
     .write_en (io_write_en),
+    .interrupts (io_interrupts),
 
     .switches (switches),
     .keys (keys),
     .leds (leds)
 );
+
+wire retint;
 
 mem_ctrl mc (
     .clk (clk),
@@ -125,8 +131,9 @@ mem_ctrl mc (
     .cin (c_backward),
     .c_write (c_write && !kill_write),
     .cout (c_forward),
-    .giein (gie),
-    .gie_write (gie_write),
+    .retint (retint),
+    .save_accum (save_accum),
+    .interrupt (interrupt),
 
     .writeaddr (operand),
     .writedata (mem_writedata),
@@ -134,6 +141,7 @@ mem_ctrl mc (
     .readaddr (mem_readaddr),
     .readdata (mem_readdata),
 
+    .io_interrupts (io_interrupts),
     .io_writeaddr (io_writeaddr),
     .io_writedata (io_writedata),
     .io_write_en (io_write_en),
@@ -160,8 +168,7 @@ alu alu0 (
     .zout (z),
     .c_write (c_write),
     .cout (c_backward),
-    .gieout (gie),
-    .gie_write (gie_write),
+    .retint (retint),
     .skip (skip)
 );
 

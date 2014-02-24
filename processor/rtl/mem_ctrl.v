@@ -8,8 +8,7 @@ module mem_ctrl (
     input cin,
     input c_write,
     output cout,
-    input giein,
-    input gie_write,
+    input retint,
 
     input [7:0] writeaddr,
     input [7:0] writedata,
@@ -18,11 +17,15 @@ module mem_ctrl (
     input [7:0] readaddr,
     output reg [7:0] readdata,
 
+    input  [7:0] io_interrupts,
     output [4:0] io_readaddr,
     input  [7:0] io_readdata,
     output [4:0] io_writeaddr,
     output [7:0] io_writedata,
     output io_write_en,
+
+    output interrupt,
+    input  save_accum,
 
     input accum_write,
     output [7:0] accum_out
@@ -40,6 +43,7 @@ reg [7:0] intcon = 8'd0;
 reg [7:0] intstatus = 8'd0;
 reg [7:0] indirects [0:3];
 reg [7:0] accum = 8'd0;
+reg [7:0] accum_backup;
 
 assign accum_out = accum;
 assign cout = status[1];
@@ -69,8 +73,8 @@ genvar i;
 generate
 for (i = 0; i < NUM_BANKS; i = i + 1) begin : MEM
     wire gp_wren = write_en && bank == i && writeaddr[7:4] != 4'd0;
-    wire [7:0] gp_rdaddr = readaddr - 8'h10;
-    wire [7:0] gp_wraddr = writeaddr - 8'h10;
+    wire [7:0] gp_rdaddr = (readaddr[7:4] == 4'd0) ? 8'd0 : readaddr - 8'h10;
+    wire [7:0] gp_wraddr = (writeaddr[7:4] == 4'd0) ? 8'd0 : writeaddr - 8'h10;
     gpmem mem (
         .clock (clk),
         .data (writedata),
@@ -102,6 +106,9 @@ always @(*) begin
         readdata <= gp_outputs[bank_sync];
 end
 
+wire internal_interrupt = status[7] && (intcon & io_interrupts) != 0;
+assign interrupt = internal_interrupt;
+
 always @(posedge clk) begin
     if (reset) begin
         accum <= 8'h00;
@@ -109,6 +116,8 @@ always @(posedge clk) begin
         intcon <= 8'h00;
         intstatus <= 8'h00;
     end else begin
+        if (save_accum)
+            accum_backup <= accum;
         if (accum_write)
             accum <= writedata;
 
@@ -128,9 +137,15 @@ always @(posedge clk) begin
                 status[0] <= zin;
             if (c_write)
                 status[1] <= cin;
-            if (gie_write)
-                status[7] <= gie_write;
+            if (retint) begin
+                status[7] <= 1'b1;
+                accum <= accum_backup;
+                intstatus <= 8'd0;
+            end
         end
+
+        if (internal_interrupt)
+            status[7] <= 1'b0;
     end
 end
 

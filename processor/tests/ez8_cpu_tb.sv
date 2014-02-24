@@ -4,6 +4,10 @@ reg clk = 1'b1;
 reg reset;
 reg pause;
 
+reg [3:0] keys;
+reg [3:0] switches;
+wire [3:0] leds;
+
 reg [11:0] instr_writeaddr;
 reg [15:0] instr_writedata;
 reg instr_write_en;
@@ -19,6 +23,10 @@ ez8_cpu cpu (
     .error (error),
     .stopped (stopped),
 
+    .keys (keys),
+    .switches (switches),
+    .leds (leds),
+
     .instr_writeaddr (instr_writeaddr),
     .instr_writedata (instr_writedata),
     .instr_write_en (instr_write_en),
@@ -31,9 +39,6 @@ integer fds [0:2];
 integer i;
 
 initial begin
-    pause = 1'b1;
-    instr_write_en = 1'b1;
-    instr_writeaddr = 12'd0;
 
     fds[0] = $fopen("../../../tests/arithmetic.bin", "r");
     fds[1] = $fopen("../../../tests/skips.bin", "r");
@@ -44,19 +49,29 @@ initial begin
             $error("Invalid file");
         end
 
+        pause = 1'b1;
+        instr_write_en = 1'b1;
+        instr_writeaddr = 12'd0;
+
         while ($fread(instr_writedata, fds[i])) begin
             #20000 instr_writeaddr = instr_writeaddr + 1'b1;
         end
 
         $fclose(fds[i]);
 
+        keys = 4'hf;
+        switches = 4'h0;
+
         reset = 1'b1;
         pause = 1'b0;
         instr_write_en = 1'b0;
         #20000 reset = 1'b0;
 
-        while (!stopped)
-            #20000;
+        while (!stopped) begin
+            if ($urandom_range(9, 0) == 0)
+                keys[0] = 1'b0;
+            #20000 keys[0] = 1'b1;
+        end
 
         assert (!error);
         assert (accum == 8'd0);

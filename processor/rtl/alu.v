@@ -14,8 +14,7 @@ module alu (
     output zout,
     output c_write,
     output cout,
-    output gie_write,
-    output gieout,
+    output retint,
     output skip
 );
 
@@ -71,14 +70,14 @@ always @(*) begin
     endcase
 end
 
-wire write_out = !(opcode[3:2] == 2'b10 || opcode == 4'b1100 && !direction);
-assign reg_write = write_out && direction;
+wire write_out = !(opcode[3:2] == 2'b10 || opcode == 4'b1100);
+wire ret_instr = (opcode == 4'b1101);
+assign reg_write = write_out && direction && !ret_instr;
 assign accum_write = write_out && !direction;
 assign z_write = (opcode[3] == 1'b0 && opcode[1:0] != 2'b00);
 assign c_write = (opcode[3] == 1'b0 && opcode[1:0] == 2'b10);
 assign zout = (result == 8'd0);
-assign gieout = (opcode == 4'b1101 && selector[2] == 1'b1);
-assign gie_write = gieout;
+assign retint = (opcode == 4'b1101 && selector[2] == 1'b1);
 
 skip_calc sc (
     .opcode (opcode),
