@@ -1,7 +1,11 @@
 .alias STATUS 1
+.alias INTCON 2
 
 .org 0
-goto main
+goto init
+
+.org 4
+retint
 
 .org 5
 main:
@@ -62,3 +66,12 @@ main:
 
 error:
   ret 1         ; 55
+
+init:
+  ; set GIE
+  set 0x80
+  ior STATUS m
+  set 0x01
+  ; enable interrupt 0
+  put INTCON
+  goto main
