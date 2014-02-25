@@ -8,6 +8,7 @@ module sockit_top (
 );
 
 wire pause = 1'b0;
+wire cpu_reset = !RESET_n;
 
 wire [11:0] instr_writeaddr = 12'd0;
 wire [15:0] instr_writedata = 16'd0;
@@ -15,7 +16,7 @@ wire instr_write_en = 1'b0;
 
 ez8_cpu cpu (
     .clk (OSC_50_B3B),
-    .reset (!RESET_n),
+    .reset (cpu_reset),
     .pause (pause),
 
     .instr_writeaddr (instr_writeaddr),

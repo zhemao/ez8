@@ -46,6 +46,11 @@ reg interrupt_wait = 1'b0;
 reg interrupt_save = 1'b0;
 reg stop_wait = 1'b0;
 
+initial begin
+    stopped = 1'b0;
+    error = 1'b0;
+end
+
 always @(posedge clk) begin
     if (reset) begin
         error <= 1'b0;
