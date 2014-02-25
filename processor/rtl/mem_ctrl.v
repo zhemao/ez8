@@ -109,6 +109,10 @@ end
 wire internal_interrupt = status[7] && (intcon & io_interrupts) != 0;
 assign interrupt = internal_interrupt;
 
+parameter STATUS_ADDR = 8'd1;
+parameter INTCON_ADDR = 8'd2;
+parameter INTSTATUS_ADDR = 8'd3;
+
 always @(posedge clk) begin
     if (reset) begin
         accum <= 8'h00;
@@ -122,11 +126,11 @@ always @(posedge clk) begin
             accum <= writedata;
 
         if (write_en) begin
-            if (writeaddr == 8'd1)
+            if (writeaddr == STATUS_ADDR)
                 status <= writedata;
-            else if (writeaddr == 8'd2)
+            else if (writeaddr == INTCON_ADDR)
                 intcon <= writedata;
-            else if (writeaddr == 8'd3)
+            else if (writeaddr == INTSTATUS_ADDR)
                 intstatus <= writedata;
             else if (writeaddr[7:2] == 6'd1)
                 indirects[writeaddr[1:0]] <= writedata;

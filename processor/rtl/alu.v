@@ -32,15 +32,19 @@ addsub as (
     .cout (cout)
 );
 
-wire bw_a_sel = (opcode == 4'b1111 && direction) ||
-                (opcode == 4'b0000 && !direction) ||
-                 opcode == 4'b0100 ||
-                 opcode == 4'b1101;
+parameter CLR_COM_OPCODE = 4'b1111;
+parameter GET_PUT_OPCODE = 4'b0000;
+parameter SET_OPCODE = 4'b0100;
+parameter RET_OPCODE = 4'b1101;
+
+wire bw_a_sel = (opcode == CLR_COM_OPCODE && direction) ||
+                (opcode == GET_PUT_OPCODE && !direction) ||
+                 opcode == SET_OPCODE || opcode == RET_OPCODE;
 wire [1:0] bw_b_sel;
 assign bw_b_sel[0] =
-    (opcode == 4'b0000 || opcode == 4'b0100 ||
-     opcode == 4'b1101 || opcode[3:1] == 3'b111);
-assign bw_b_sel[1] = (opcode == 4'b1111 && !selector[2]);
+    (opcode == GET_PUT_OPCODE || opcode == SET_OPCODE ||
+     opcode == RET_OPCODE || opcode == CLR_COM_OPCODE);
+assign bw_b_sel[1] = (opcode == CLR_COM_OPCODE && !selector[2]);
 wire [7:0] bw_res;
 
 bitwise bw (
@@ -70,14 +74,16 @@ always @(*) begin
     endcase
 end
 
-wire write_out = !(opcode[3:2] == 2'b10 || opcode == 4'b1100);
-wire ret_instr = (opcode == 4'b1101);
+parameter SKBC_OPCODE = 4'b1100;
+
+wire write_out = !(opcode[3:2] == 2'b10 || opcode == SKBC_OPCODE);
+wire ret_instr = (opcode == RET_OPCODE);
 assign reg_write = write_out && direction && !ret_instr;
 assign accum_write = write_out && !direction;
 assign z_write = (opcode[3] == 1'b0 && opcode[1:0] != 2'b00);
 assign c_write = (opcode[3] == 1'b0 && opcode[1:0] == 2'b10);
 assign zout = (result == 8'd0);
-assign retint = (opcode == 4'b1101 && selector[2] == 1'b1);
+assign retint = (opcode == RET_OPCODE && selector[2] == 1'b1);
 
 skip_calc sc (
     .opcode (opcode),
