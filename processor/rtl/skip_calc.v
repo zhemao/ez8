@@ -22,16 +22,16 @@ wire bc = !bs;
 always @(*) begin
     case (opcode)
         4'b1010: case (selector)
-            3'b000:  skip <= eqz;
-            3'b001:  skip <= nez;
-            3'b010:  skip <= ltz;
-            3'b011:  skip <= gez;
-            3'b100:  skip <= gtz;
-            default: skip <= lez;
+            3'b000:  skip = eqz;
+            3'b001:  skip = nez;
+            3'b010:  skip = ltz;
+            3'b011:  skip = gez;
+            3'b100:  skip = gtz;
+            default: skip = lez;
         endcase
-        4'b1011: skip <= bs;
-        4'b1100: skip <= bc;
-        default: skip <= 1'b0;
+        4'b1011: skip = bs;
+        4'b1100: skip = bc;
+        default: skip = 1'b0;
     endcase
 end
 

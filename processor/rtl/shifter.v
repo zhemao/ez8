@@ -10,11 +10,11 @@ module shifter (
 
 always @(*) begin
     if (!lr)
-        shift_out <= shift_in << shift_by;
+        shift_out = shift_in << shift_by;
     else if (arith)
-        shift_out <= shift_in >>> shift_by;
+        shift_out = shift_in >>> shift_by;
     else
-        shift_out <= shift_in >> shift_by;
+        shift_out = shift_in >> shift_by;
 end
 
 endmodule

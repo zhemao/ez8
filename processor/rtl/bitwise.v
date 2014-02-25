@@ -15,9 +15,9 @@ wire [7:0] real_b = (b_sel[1]) ? 8'h00 : (b_sel[0]) ? 8'hff : b;
 
 always @(*) begin
     case (op_sel)
-        2'b00: res <= real_a & real_b;
-        2'b01: res <= real_a | real_b;
-        default: res <= real_a ^ real_b;
+        2'b00: res = real_a & real_b;
+        2'b01: res = real_a | real_b;
+        default: res = real_a ^ real_b;
     endcase
 end
 

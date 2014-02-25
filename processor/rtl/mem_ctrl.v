@@ -89,21 +89,21 @@ endgenerate
 
 always @(*) begin
     if (readaddr_sync == writeaddr_sync && write_en_sync)
-        readdata <= writedata_sync;
+        readdata = writedata_sync;
     else if (readaddr_sync == 0)
-        readdata <= 8'd0;
+        readdata = 8'd0;
     else if (readaddr_sync == 8'd1)
-        readdata <= status;
+        readdata = status;
     else if (readaddr_sync == 8'd2)
-        readdata <= intcon;
+        readdata = intcon;
     else if (readaddr_sync == 8'd3)
-        readdata <= intstatus;
+        readdata = intstatus;
     else if (readaddr_sync[7:2] == 6'd1)
-        readdata <= indirects[readaddr_sync[1:0]];
+        readdata = indirects[readaddr_sync[1:0]];
     else if (readaddr_sync[7:3] == 5'd1)
-        readdata <= io_readdata;
+        readdata = io_readdata;
     else
-        readdata <= gp_outputs[bank_sync];
+        readdata = gp_outputs[bank_sync];
 end
 
 wire internal_interrupt = status[7] && (intcon & io_interrupts) != 0;

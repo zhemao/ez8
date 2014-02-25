@@ -64,9 +64,9 @@ shifter shift (
 
 always @(*) begin
     case (opcode[1:0])
-        2'b01: result <= shift_res;
-        2'b10: result <= as_res;
-        default: result <= bw_res;
+        2'b01: result = shift_res;
+        2'b10: result = as_res;
+        default: result = bw_res;
     endcase
 end
 
