@@ -15,29 +15,28 @@ module io_ctrl (
     output [3:0] leds
 );
 
-reg [3:0] key_reg;
-reg [3:0] switch_reg;
 reg [3:0] led_reg;
+
+wire [7:0] switch_key = {switches, keys};
+reg  [7:0] switch_key_reg;
+reg  [7:0] switch_key_flipped;
 
 assign leds = led_reg;
 
-reg [3:0] switches_flipped;
-
-assign interrupts = {switches_flipped, ~key_reg};
+assign interrupts[0] = (switch_key_flipped != 8'd0);
+assign interrupts[7:1] = 7'd0;
 
 always @(posedge clk) begin
     if (reset) begin
-        key_reg <= 4'd0;
-        switch_reg <= 4'd0;
+        switch_key_reg <= 8'd0;
         led_reg <= 4'd0;
-        switches_flipped <= 4'd0;
+        switch_key_flipped <= 8'd0;
     end else begin
-        key_reg <= keys;
-        switch_reg <= switches;
-        switches_flipped <= switch_reg ^ switches;
+        switch_key_reg <= switch_key;
+        switch_key_flipped <= switch_key_reg ^ switch_key;
 
         case (readaddr)
-            5'd0: readdata <= {switch_reg, key_reg};
+            5'd0: readdata <= switch_key_reg;
             5'd1: readdata <= {4'b0, leds};
             default: readdata <= 8'd0;
         endcase
