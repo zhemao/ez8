@@ -1,6 +1,6 @@
 simulation: arithmetic.bin skips.bin indirect.bin banks.bin
 
-fpga: led_switch.hex
+fpga: led_example.hex
 
 test: test_arithmetic test_skips test_indirect test_banks
 
