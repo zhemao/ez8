@@ -30,9 +30,10 @@ steps.
 2. Go into the "tests" directory and run `make fpga` to build the
    FPGA test program. You will need to have [SRecord](http://srecord.sourceforge.net/)
    installed in order to do this.
-3. Open the project file in Quartus, run the Assembler, then open the
+3. Copy the "led\_example.hex" file to "processor/program.hex".
+4. Open the project file in Quartus, run the Assembler, then open the
    programmer and program the FPGA through the USB Blaster.
-4. The program should now be running. Flip a switch and it should flip the
+5. The program should now be running. Flip a switch and it should flip the
    corresponding LED on and off.
 
 Detailed documentation is available in the "docs/" folder.
