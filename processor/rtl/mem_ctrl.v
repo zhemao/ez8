@@ -106,7 +106,7 @@ always @(*) begin
         readdata = gp_outputs[bank_sync];
 end
 
-wire internal_interrupt = status[7] && (intcon & io_interrupts) != 0;
+wire internal_interrupt = status[7] && ((intcon & io_interrupts) != 0);
 assign interrupt = internal_interrupt;
 
 parameter STATUS_ADDR = 8'd1;
@@ -148,8 +148,10 @@ always @(posedge clk) begin
             end
         end
 
-        if (internal_interrupt)
+        if (internal_interrupt) begin
             status[7] <= 1'b0;
+            intstatus <= io_interrupts;
+        end
     end
 end
 
