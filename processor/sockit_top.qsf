@@ -468,6 +468,7 @@ set_location_assignment PIN_AH5 -to VGA_R[6]
 set_location_assignment PIN_AJ1 -to VGA_R[7]
 set_location_assignment PIN_AG2 -to VGA_SYNC_n
 set_location_assignment PIN_AC12 -to VGA_VS
+set_global_assignment -name VERILOG_FILE rtl/peripherals/millis_timer.v
 set_global_assignment -name VERILOG_FILE rtl/io_ctrl.v
 set_global_assignment -name SDC_FILE sockit.sdc
 set_global_assignment -name VERILOG_FILE rtl/stack.v
