@@ -15,55 +15,57 @@ module io_ctrl (
     output [3:0] leds
 );
 
-reg [3:0] led_reg;
-
-wire [7:0] switch_key = {switches, keys};
-reg  [7:0] switch_key_reg;
-reg  [7:0] switch_key_flipped;
-
-assign leds = led_reg;
-
-assign interrupts[0] = (switch_key_flipped != 8'd0);
 assign interrupts[7:2] = 6'd0;
 
-reg [7:0] timer_count;
-reg timer_count_write;
+wire timer_count_write = write_en && (writeaddr == 8'd2);
+wire [7:0] timer_count;
 
 millis_timer timer (
     .clk (clk),
     .reset (reset),
-    .count_in (timer_count),
+    .count_in (writedata),
+    .count_out (timer_count),
     .count_write (timer_count_write),
     .expired (interrupts[1])
 );
 
-always @(posedge clk) begin
-    timer_count_write <= 1'b0;
+wire [7:0] sw_key_readdata;
 
-    if (reset) begin
-        switch_key_reg <= 8'd0;
-        led_reg <= 4'd0;
-        switch_key_flipped <= 8'd0;
-    end else begin
-        switch_key_reg <= switch_key;
-        switch_key_flipped <= switch_key_reg ^ switch_key;
+switch_key_ctrl sw_key (
+    .clk (clk),
+    .reset (reset),
 
-        case (readaddr)
-            5'd0: readdata <= switch_key_reg;
-            5'd1: readdata <= {4'b0, leds};
-            default: readdata <= 8'd0;
-        endcase
+    .keys (keys),
+    .switches (switches),
+    .flipped (interrupts[0]),
 
-        if (write_en) begin
-            case (writeaddr)
-                5'd1: led_reg <= writedata[3:0];
-                5'd2: begin
-                    timer_count <= writedata;
-                    timer_count_write <= 1'b1;
-                end
-            endcase
-        end
-    end
+    .readdata (sw_key_readdata)
+);
+
+wire [7:0] led_readdata;
+wire led_write_en = write_en && (writeaddr == 8'd1);
+
+led_ctrl led (
+    .clk (clk),
+    .reset (reset),
+    .leds (leds),
+    .writedata (writedata),
+    .readdata (led_readdata),
+    .write_en (led_write_en)
+);
+
+reg [7:0] readaddr_sync;
+
+always @(posedge clk)
+    readaddr_sync <= readaddr;
+
+always @(*) begin
+    case (readaddr_sync)
+        8'd0: readdata = sw_key_readdata;
+        8'd1: readdata = led_readdata;
+        8'd2: readdata = timer_count;
+        default: readdata = 8'd0;
+    endcase
 end
 
 endmodule

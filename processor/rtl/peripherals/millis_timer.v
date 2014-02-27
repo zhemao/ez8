@@ -4,6 +4,7 @@ module millis_timer (
 
     input [7:0] count_in,
     input count_write,
+    output [7:0] count_out,
 
     output reg expired
 );
@@ -14,6 +15,8 @@ parameter SHORT_COUNT_START = 16'd49999;
 reg [7:0] long_count;
 reg [15:0] short_count;
 reg count_down = 1'b0;
+
+assign count_out = long_count;
 
 always @(posedge clk) begin
     if (reset) begin
