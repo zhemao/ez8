@@ -43,7 +43,7 @@ type instruction =
   | Iput of int * addr
 
 type directive =
-  | Label of string
-  | Org of int
-  | Alias of string * int
-  | Instruction of instruction
+  | Label of int * string
+  | Org of int * int
+  | Alias of int * string * int
+  | Instruction of int * instruction

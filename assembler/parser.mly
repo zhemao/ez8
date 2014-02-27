@@ -1,8 +1,11 @@
 %{
     open Instructions;;
+    open Exceptions;;
     let bool_of_int = function
         | 0 -> false
         | _ -> true
+    let raise_unknown instr =
+        raise (Unknown_instruction instr)
 %}
 
 %token GET PUT SLL SRL SRA
@@ -84,12 +87,15 @@ instruction:
   | IGET addr { Iget(0, $2) }
   | IPUT addr INT_LIT { Iput($3, $2) }
   | IPUT addr { Iput(0, $2) }
+  | LABEL { raise_unknown $1 }
+  | LABEL addr { raise (Unknown_instruction $1) }
+  | LABEL addr addr { raise (Unknown_instruction $1) }
 
 directive:
-  | LABEL COLON { Label($1) }
-  | ORG INT_LIT { Org($2) }
-  | ALIAS LABEL INT_LIT { Alias($2, $3) }
-  | instruction { Instruction($1) }
+  | LABEL COLON { Label(!Linenum.linenum, $1) }
+  | ORG INT_LIT { Org(!Linenum.linenum, $2) }
+  | ALIAS LABEL INT_LIT { Alias(!Linenum.linenum, $2, $3) }
+  | instruction { Instruction(!Linenum.linenum, $1) }
 
 top_level:
   | directive EOL top_level { $1 :: $3 }

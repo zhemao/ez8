@@ -1,15 +1,15 @@
 open Instructions
 open Printf
-
-exception Syntax_error of int * int * string
-exception Too_many_bits
-exception Not_enough_bits
+open Exceptions
 
 module LabelMap = Map.Make(String);;
 
 let resolve_addr labels = function
   | AddrLiteral(i) -> i
-  | AddrLabel(s) -> LabelMap.find s labels
+  | AddrLabel(s) ->
+        if LabelMap.mem s labels then
+            LabelMap.find s labels
+        else raise (Label_not_defined s)
   | AddrNone -> 0
 
 let rec concat_bits chunks word_size accum =
@@ -96,21 +96,30 @@ let encode_instruction labels instruction =
 
 let rec second_pass directives cur_addr labels code =
     match directives with
-      | Instruction(instr) :: rest ->
+      | Instruction(ln, instr) :: rest ->
+            Linenum.linenum := ln;
             code.(cur_addr) <- encode_instruction labels instr;
             second_pass rest (cur_addr + 1) labels code
-      | Org(addr) :: rest -> second_pass rest addr labels code
+      | Org(ln, addr) :: rest ->
+            Linenum.linenum := ln;
+            second_pass rest addr labels code
       | _ :: rest -> second_pass rest cur_addr labels code
       | [] -> code
 
 let rec first_pass directives cur_addr labels =
     match directives with
-      | Label(str) :: rest ->
+      | Label(ln, str) :: rest ->
+            Linenum.linenum := ln;
             first_pass rest cur_addr (LabelMap.add str cur_addr labels)
-      | Org(addr) :: rest -> first_pass rest addr labels
-      | Alias(str, addr) :: rest ->
+      | Org(ln, addr) :: rest ->
+            Linenum.linenum := ln;
+            first_pass rest addr labels
+      | Alias(ln, str, addr) :: rest ->
+            Linenum.linenum := ln;
             first_pass rest cur_addr (LabelMap.add str addr labels)
-      | Instruction(_) :: rest -> first_pass rest (cur_addr + 1) labels
+      | Instruction(ln, _) :: rest ->
+            Linenum.linenum := ln;
+            first_pass rest (cur_addr + 1) labels
       | [] -> (cur_addr + 1), labels
 
 let output_word file word =
@@ -128,18 +137,19 @@ let () =
         let asmfilename = Sys.argv.(1) in
         let asmfile = open_in asmfilename in
         let lexbuf = Lexing.from_channel asmfile in
-        let directives = try
-            Parser.top_level Scanner.token lexbuf
-        with except ->
-            let curr = lexbuf.Lexing.lex_curr_p in
-            let line = curr.Lexing.pos_lnum in
-            let col = curr.Lexing.pos_cnum in
-            let tok = Lexing.lexeme lexbuf in
-            raise (Syntax_error (line, col, tok))
-        in
-        let code_size, labels = first_pass directives 0 LabelMap.empty in
-        let code = Array.make code_size 0 in
-        let code = second_pass directives 0 labels code in
-        let binfilename = Filename.chop_extension asmfilename ^ ".bin" in
-        let binfile = open_out_bin binfilename in
-        output_code binfile code; close_in asmfile; close_out binfile;;
+        try
+            let directives = Parser.top_level Scanner.token lexbuf in
+            let code_size, labels = first_pass directives 0 LabelMap.empty in
+            let code = Array.make code_size 0 in
+            let code = second_pass directives 0 labels code in
+            let binfilename = Filename.chop_extension asmfilename ^ ".bin" in
+            let binfile = open_out_bin binfilename in
+            output_code binfile code; close_in asmfile; close_out binfile
+        with
+          | Parser.Error ->
+                printf "Parse error on line %d\n" !Linenum.linenum
+          | Unknown_instruction str ->
+                printf "Unknown instruction %s on line %d\n" str !Linenum.linenum
+          | Label_not_defined str ->
+                printf "Label %s not found on line %d\n" str !Linenum.linenum
+          | err -> raise err

@@ -48,12 +48,12 @@ rule token = parse
         as lit { INT_LIT(int_of_string lit) }
   | ';' { comments lexbuf }
   | ':' { COLON }
-  | '\n' | "\r\n"{ EOL }
+  | '\n' | "\r\n"{ incr Linenum.linenum; EOL }
   | ".org" { ORG }
   | ".alias" { ALIAS }
   | letter (letter | decdigit)* as label { LABEL(label) }
   | [' ' '\t'] { token lexbuf }
   | eof { EOF }
 and comments = parse
-  | '\n' { token lexbuf }
+  | '\n' { incr Linenum.linenum; token lexbuf }
   | [^'\n']+ { EOL }
