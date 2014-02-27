@@ -13,26 +13,31 @@ parameter SHORT_COUNT_START = 16'd49999;
 
 reg [7:0] long_count;
 reg [15:0] short_count;
+reg count_down = 1'b0;
 
 always @(posedge clk) begin
     if (reset) begin
         long_count <= 8'd0;
         short_count <= SHORT_COUNT_START;
         expired <= 1'b0;
-    end else if (count_write)
+        count_down <= 1'b0;
+    end else if (count_write) begin
         long_count <= count_in;
-    else begin
+        count_down <= 1'b1;
+        expired <= 1'b0;
+    end else if (count_down) begin
         if (short_count == 16'd0) begin
             short_count <= SHORT_COUNT_START;
             if (long_count != 8'd0)
                 long_count <= long_count - 1'b1;
-            else
+            else begin
                 expired <= 1'b1;
-        end else begin
+                count_down <= 1'b0;
+            end
+        end else
             short_count <= short_count - 1'b1;
-            expired <= 1'b0;
-        end
-    end
+    end else
+        expired <= 1'b0;
 end
 
 endmodule
