@@ -41,7 +41,8 @@ be set.
 
 ### 08 - 0F : IO Memory
 
-Reserved for Memory-Mapped I/O
+Reserved for Memory-Mapped I/O. See [peripherals.md](peripherals.md) for more
+information.
 
 ### 10 - FF : General Purpose Memory
 
