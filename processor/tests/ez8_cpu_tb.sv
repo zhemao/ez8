@@ -15,6 +15,13 @@ wire [7:0] accum;
 wire error;
 wire stopped;
 
+wire [7:0] io_writedata;
+wire [4:0] io_writeaddr;
+wire io_write_en;
+wire [7:0] io_readdata;
+wire [4:0] io_readaddr;
+wire [7:0] io_interrupts;
+
 ez8_cpu cpu (
     .clk (clk),
     .reset (reset),
@@ -23,14 +30,33 @@ ez8_cpu cpu (
     .error (error),
     .stopped (stopped),
 
-    .keys (keys),
-    .switches (switches),
-    .leds (leds),
+    .io_readaddr (io_readaddr),
+    .io_readdata (io_readdata),
+    .io_writeaddr (io_writeaddr),
+    .io_writedata (io_writedata),
+    .io_write_en (io_write_en),
+    .io_interrupts (io_interrupts),
 
     .instr_writeaddr (instr_writeaddr),
     .instr_writedata (instr_writedata),
     .instr_write_en (instr_write_en),
     .accum_out (accum)
+);
+
+io_ctrl io (
+    .clk (clk),
+    .reset (cpu_reset),
+
+    .readaddr (io_readaddr),
+    .readdata (io_readdata),
+    .writeaddr (io_writeaddr),
+    .writedata (io_writedata),
+    .write_en (io_write_en),
+    .interrupts (io_interrupts),
+
+    .switches (switches),
+    .keys (switches),
+    .leds (leds)
 );
 
 always #10000 clk = !clk;

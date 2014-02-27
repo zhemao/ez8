@@ -7,9 +7,12 @@ module ez8_cpu (
     input [15:0] instr_writedata,
     input instr_write_en,
 
-    input  [3:0] keys,
-    input  [3:0] switches,
-    output [3:0] leds,
+    output [7:0] io_writedata,
+    output [4:0] io_writeaddr,
+    output io_write_en,
+    input  [7:0] io_readdata,
+    output [4:0] io_readaddr,
+    input  [7:0] io_interrupts,
 
     output stopped,
     output error,
@@ -95,29 +98,6 @@ wire accum_write;
 wire [7:0] accum;
 
 assign accum_out = accum;
-
-wire [7:0] io_writedata;
-wire [4:0] io_writeaddr;
-wire io_write_en;
-wire [7:0] io_readdata;
-wire [4:0] io_readaddr;
-wire [7:0] io_interrupts;
-
-io_ctrl io (
-    .clk (clk),
-    .reset (reset),
-
-    .readaddr (io_readaddr),
-    .readdata (io_readdata),
-    .writeaddr (io_writeaddr),
-    .writedata (io_writedata),
-    .write_en (io_write_en),
-    .interrupts (io_interrupts),
-
-    .switches (switches),
-    .keys (keys),
-    .leds (leds)
-);
 
 wire retint;
 
