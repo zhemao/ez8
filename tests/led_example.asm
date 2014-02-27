@@ -16,7 +16,7 @@ goto isrService
 
 main:
 ; enable interrupts
-  set 0x01
+  set 0x03
   ior INTCON m
   set 0x80
   put STATUS
@@ -48,9 +48,13 @@ handleKeypress:
   goto changeState
 
 handleTimer:
-; reset the timer
+  ; reset the timer
   set 100
   put TIMER
+  ; only change state on timer interrupt
+  ; if SWITCH 0 is off
+  skbc KEY_SWITCH 4
+  retint
 
 changeState:
   skbs DIRECTION 0
