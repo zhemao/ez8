@@ -33,7 +33,8 @@ steps.
 3. Copy the "led\_example.hex" file to "processor/program.hex".
 4. Open the project file in Quartus, run the Assembler, then open the
    programmer and program the FPGA through the USB Blaster.
-5. The program should now be running. Flip a switch and it should flip the
-   corresponding LED on and off.
+5. The program should now be running. If switch 0 is off (down), the LEDs will
+   sweep back and forth regularly. If switch 0 is on (up), the LEDs will
+   advance when you press key 0.
 
 Detailed documentation is available in the "docs/" folder.
