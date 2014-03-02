@@ -78,14 +78,14 @@ wire z_write;
 wire c_write;
 
 reg [3:0] opcode;
-reg [7:0] operand;
+wire [7:0] operand;
 reg [2:0] selector;
 reg direction;
 
+wire indir_read_en = (instr[15:12] == 4'b1110);
 
 always @(posedge clk) begin
     opcode <= instr[15:12];
-    operand <= instr[11:4];
     selector <= instr[3:1];
     direction <= instr[0];
 end
@@ -96,6 +96,7 @@ wire [7:0] mem_readaddr = instr[11:4];
 wire [7:0] mem_readdata;
 wire accum_write;
 wire [7:0] accum;
+wire [1:0] mem_indir_addr = instr[2:1];
 
 assign accum_out = accum;
 
@@ -120,6 +121,10 @@ mem_ctrl mc (
     .write_en (mem_write_en && !kill_write),
     .readaddr (mem_readaddr),
     .readdata (mem_readdata),
+
+    .indir_addr_in (mem_indir_addr),
+    .indir_read_en (indir_read_en),
+    .readaddr_out (operand),
 
     .io_interrupts (io_interrupts),
     .io_writeaddr (io_writeaddr),

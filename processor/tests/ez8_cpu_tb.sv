@@ -61,7 +61,7 @@ io_ctrl io (
 
 always #10000 clk = !clk;
 
-integer fds [0:2];
+integer fds [0:3];
 integer i;
 
 initial begin
@@ -69,8 +69,9 @@ initial begin
     fds[0] = $fopen("../../../tests/arithmetic.bin", "r");
     fds[1] = $fopen("../../../tests/skips.bin", "r");
     fds[2] = $fopen("../../../tests/banks.bin", "r");
+    fds[3] = $fopen("../../../tests/indirect.bin", "r");
 
-    for (i = 0; i < 3; i = i + 1) begin
+    for (i = 0; i < 4; i = i + 1) begin
         if (fds[i] == 0) begin
             $error("Invalid file");
         end

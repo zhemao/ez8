@@ -12,21 +12,14 @@ add wave -radix unsigned cpu/pc
 add wave -radix decimal accum
 add wave -radix hexadecimal cpu/instr
 add wave -radix hexadecimal cpu/opcode
-add wave cpu/pc_kill
-add wave cpu/kill_write
-add wave cpu/goto
-add wave cpu/ret
-add wave cpu/call
-add wave cpu/skip
 
-add wave cpu/retint
-add wave cpu/interrupt
-add wave cpu/pcc/interrupt_wait
-add wave cpu/pcc/interrupt_save
-add wave cpu/pcc/kill_shift
-add wave cpu/save_accum
-add wave -radix hexadecimal cpu/pcc/stack_output
-
-set IgnoreSVAWarning 1
+add wave cpu/mem_indir_addr
+add wave cpu/indir_read_en
+add wave -radix hexadecimal cpu/mc/indir_addr
+add wave -radix hexadecimal cpu/operand
+add wave -radix hexadecimal cpu/mem_readdata
+add wave cpu/mem_write_en
+add wave -radix hexadecimal cpu/mc/readaddr
+add wave -radix hexadecimal cpu/mc/real_readaddr
 
 run 6 us

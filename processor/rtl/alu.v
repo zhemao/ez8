@@ -18,7 +18,14 @@ module alu (
     output skip
 );
 
-wire [7:0] a = (opcode[3]) ? regvalue : accum;
+parameter CLR_COM_OPCODE = 4'b1111;
+parameter GET_PUT_OPCODE = 4'b0000;
+parameter SET_OPCODE = 4'b0100;
+parameter RET_OPCODE = 4'b1101;
+parameter INDIR_OPCODE = 4'b1110;
+
+wire [7:0] a = accum;
+// immediate instructions and ret instructions use the operand
 wire [7:0] b = (opcode[3:2] == 2'b01) ? operand : regvalue;
 wire [7:0] as_res;
 
@@ -32,17 +39,14 @@ addsub as (
     .cout (cout)
 );
 
-parameter CLR_COM_OPCODE = 4'b1111;
-parameter GET_PUT_OPCODE = 4'b0000;
-parameter SET_OPCODE = 4'b0100;
-parameter RET_OPCODE = 4'b1101;
-
 wire bw_a_sel = (opcode == CLR_COM_OPCODE && direction) ||
                 (opcode == GET_PUT_OPCODE && !direction) ||
+                (opcode == INDIR_OPCODE && !direction) ||
                  opcode == SET_OPCODE || opcode == RET_OPCODE;
 wire [1:0] bw_b_sel;
 assign bw_b_sel[0] =
     (opcode == GET_PUT_OPCODE || opcode == SET_OPCODE ||
+     opcode == INDIR_OPCODE ||
      opcode == RET_OPCODE || opcode == CLR_COM_OPCODE);
 assign bw_b_sel[1] = (opcode == CLR_COM_OPCODE && !selector[2]);
 wire [7:0] bw_res;
@@ -67,7 +71,10 @@ shifter shift (
 );
 
 always @(*) begin
-    case (opcode[1:0])
+    // unfortunately, indirects are a special case
+    if (opcode == INDIR_OPCODE)
+        result = bw_res;
+    else case (opcode[1:0])
         2'b01: result = shift_res;
         2'b10: result = as_res;
         default: result = bw_res;

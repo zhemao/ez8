@@ -24,6 +24,10 @@ module mem_ctrl (
     output [7:0] io_writedata,
     output io_write_en,
 
+    input  [1:0] indir_addr_in,
+    input indir_read_en,
+    output [7:0] readaddr_out,
+
     output interrupt,
     input  save_accum,
 
@@ -52,17 +56,37 @@ wire [1:0] bank = (writeaddr == 8'h01 && write_en) ?
                     writedata[6:5] : status[6:5];
 reg [1:0] bank_sync;
 
+reg [7:0] indir_addr;
+
+always @(*) begin
+    if (writeaddr == {6'd1, indir_addr_in} && write_en)
+        indir_addr = writedata + readaddr;
+    else
+        indir_addr = indirects[indir_addr_in] + readaddr;
+end
+
+reg [7:0] real_readaddr;
+
+always @(*) begin
+    if (indir_read_en)
+        real_readaddr = indir_addr;
+    else
+        real_readaddr = readaddr;
+end
+
 always @(posedge clk) begin
     if (!pause) begin
         writeaddr_sync <= writeaddr;
-        readaddr_sync <= readaddr;
+        readaddr_sync <= real_readaddr;
         writedata_sync <= writedata;
         write_en_sync <= write_en;
         bank_sync <= bank;
     end
 end
 
-assign io_readaddr = {bank, readaddr[2:0]};
+assign readaddr_out = readaddr_sync;
+
+assign io_readaddr = {bank, real_readaddr[2:0]};
 assign io_writeaddr = {bank, writeaddr[2:0]};
 assign io_writedata = writedata;
 assign io_write_en = (writeaddr[7:3] == 5'd1) && write_en;
@@ -73,8 +97,10 @@ genvar i;
 generate
 for (i = 0; i < NUM_BANKS; i = i + 1) begin : MEM
     wire gp_wren = write_en && bank == i && writeaddr[7:4] != 4'd0;
-    wire [7:0] gp_rdaddr = (readaddr[7:4] == 4'd0) ? 8'd0 : readaddr - 8'h10;
-    wire [7:0] gp_wraddr = (writeaddr[7:4] == 4'd0) ? 8'd0 : writeaddr - 8'h10;
+    wire [7:0] gp_rdaddr =
+        (real_readaddr[7:4] == 4'd0) ? 8'd0 : real_readaddr - 8'h10;
+    wire [7:0] gp_wraddr =
+        (writeaddr[7:4] == 4'd0) ? 8'd0 : writeaddr - 8'h10;
     gpmem mem (
         .clock (clk),
         .data (writedata),
