@@ -7,9 +7,20 @@ module sockit_top (
     output [3:0] LED
 );
 
-wire pause = 1'b0;
 wire cpu_reset = !RESET_n;
-wire master_clk = OSC_50_B3B;
+wire main_clk;
+wire audio_clk;
+wire locked;
+
+pll p (
+    .refclk (OSC_50_B3B),
+    .rst (cpu_reset),
+    .outclk_0 (main_clk),
+    .outclk_1 (audio_clk),
+    .locked (locked)
+);
+
+wire pause = !locked;
 
 wire [11:0] instr_writeaddr = 12'd0;
 wire [15:0] instr_writedata = 16'd0;
@@ -23,7 +34,7 @@ wire [4:0] io_readaddr;
 wire [7:0] io_interrupts;
 
 ez8_cpu cpu (
-    .clk (master_clk),
+    .clk (main_clk),
     .reset (cpu_reset),
     .pause (pause),
 
@@ -40,7 +51,7 @@ ez8_cpu cpu (
 );
 
 io_ctrl io (
-    .clk (master_clk),
+    .clk (main_clk),
     .reset (cpu_reset),
 
     .readaddr (io_readaddr),
