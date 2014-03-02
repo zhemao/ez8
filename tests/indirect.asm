@@ -27,8 +27,9 @@ main:
   subl 0x23     ; 24
   skbs STATUS 0 ; 25
   goto error    ; 26
-
-  ret 0         ; 27
+  set 0         ; 27
+  ret           ; 28
 
 error:
-  ret 1         ; 28
+  set 1         ; 29
+  ret           ; 30

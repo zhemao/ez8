@@ -35,7 +35,7 @@ type instruction =
   | Sklez of addr * bool
   | Skbs  of addr * int * bool
   | Skbc  of addr * int * bool
-  | Ret of int * bool
+  | Ret
   | Retint
   | Clr of addr * bool
   | Com of addr * bool

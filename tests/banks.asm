@@ -23,7 +23,9 @@ main:
   subl 0x06    ; 20
   skeqz        ; 21
   goto error   ; 22
-  ret 0        ; 23
+  set 0        ; 23
+  ret          ; 24
 
 error:
-  ret 1        ; 24
+  set 1        ; 25
+  ret          ; 26

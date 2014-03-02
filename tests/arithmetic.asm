@@ -62,10 +62,12 @@ main:
   subl 0x5c     ; 51
   skbs STATUS 0 ; 52
   goto error    ; 53
-  ret 0         ; 54
+  set 0         ; 54
+  ret           ; 55
 
 error:
-  ret 1         ; 55
+  set 1         ; 56
+  ret           ; 57
 
 init:
   ; set GIE

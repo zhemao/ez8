@@ -76,9 +76,10 @@ end
 
 parameter SKBC_OPCODE = 4'b1100;
 
-wire write_out = !(opcode[3:2] == 2'b10 || opcode == SKBC_OPCODE);
-wire ret_instr = (opcode == RET_OPCODE);
-assign reg_write = write_out && direction && !ret_instr;
+wire write_out = !(opcode[3:2] == 2'b10 ||
+                   opcode == SKBC_OPCODE ||
+                   opcode == RET_OPCODE);
+assign reg_write = write_out && direction;
 assign accum_write = write_out && !direction;
 assign z_write = (opcode[3] == 1'b0 && opcode[1:0] != 2'b00);
 assign c_write = (opcode[3] == 1'b0 && opcode[1:0] == 2'b10);
