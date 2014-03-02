@@ -39,6 +39,11 @@ setting or clearing the corresponding bit in this register.
 If one of the 8 interrupts occurs, the corresponding bit in this register will
 be set.
 
+### 04 - 07 : Indirect Memory
+
+The values at these addresses are used as the indirect values during
+`iget` or `iput` instructions.
+
 ### 08 - 0F : IO Memory
 
 Reserved for Memory-Mapped I/O. See [peripherals.md](peripherals.md) for more

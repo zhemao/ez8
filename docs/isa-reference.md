@@ -45,6 +45,24 @@ Encoding: 1111aaaaaaaa0001 | 1111000000000000
 If address is provided, set the value of the memory cell at that address to 0.
 Otherwise, set the accumulator value to 0.
 
+### Indirect Get
+
+Syntax: `iget a`
+
+Encoding: 1110aaaaaaaa0bb0
+
+Indirect fetch into the accumulator. The indirect registers take up addresses
+04 - 07 of virtual memory. This instruction will fetch the value at address
+`indirects[b] + a` into the accumulator.
+
+### Indirect Put
+
+Syntax `iput a`
+
+Encoding: 1110aaaaaaaa0bb1
+
+Writes the accumulator value to address `indirects[b] + a` in memory.
+
 ## Shift Instructions
 
 ### Logical Shift Left
@@ -228,7 +246,7 @@ given address.
 
 Syntax: `ret [a]`
 
-Encoding: 1101aaaaaaaa0000 | 1101000000000001
+Encoding: 1101000000000000
 
 Set the program counter to the value on the top of the stack and pop the stack.
 
@@ -236,7 +254,7 @@ Set the program counter to the value on the top of the stack and pop the stack.
 
 Syntax: `retint`
 
-Encoding: 1101000000001001
+Encoding: 1101000000001000
 
 Sets the program counter to the value popped off the stack. Also restores
 accumulator value saved on interrupt, clears the INTCON register, and sets GIE
