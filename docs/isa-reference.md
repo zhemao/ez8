@@ -244,7 +244,7 @@ given address.
 
 ### Return
 
-Syntax: `ret [a]`
+Syntax: `ret`
 
 Encoding: 1101000000000000
 
