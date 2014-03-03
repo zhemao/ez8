@@ -84,6 +84,9 @@ reg direction;
 
 wire indir_read_en = (instr[15:12] == 4'b1110);
 
+// Synchronize parts of the instruction for the alu.
+// operand is synchronized inside the memory controller,
+// so we don't need to handle it here
 always @(posedge clk) begin
     opcode <= instr[15:12];
     selector <= instr[3:1];

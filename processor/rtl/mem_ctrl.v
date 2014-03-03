@@ -56,17 +56,20 @@ wire [1:0] bank = (writeaddr == 8'h01 && write_en) ?
                     writedata[6:5] : status[6:5];
 reg [1:0] bank_sync;
 
-reg [7:0] indir_addr;
+reg  [7:0] indir_value;
+wire [7:0] indir_addr = indir_value + readaddr;
 
+// if the indirect register is being written to, we have to bypass
 always @(*) begin
     if (writeaddr == {6'd1, indir_addr_in} && write_en)
-        indir_addr = writedata + readaddr;
+        indir_value = writedata;
     else
-        indir_addr = indirects[indir_addr_in] + readaddr;
+        indir_value = indirects[indir_addr_in];
 end
 
 reg [7:0] real_readaddr;
 
+// mux the actual read address
 always @(*) begin
     if (indir_read_en)
         real_readaddr = indir_addr;
@@ -74,6 +77,8 @@ always @(*) begin
         real_readaddr = readaddr;
 end
 
+// create registered versions of all the inputs to match with the
+// gpmem registers
 always @(posedge clk) begin
     if (!pause) begin
         writeaddr_sync <= writeaddr;
@@ -86,6 +91,8 @@ end
 
 assign readaddr_out = readaddr_sync;
 
+// generate the io_* signals
+// address is 2 bits of bank + lower 3 bits of address
 assign io_readaddr = {bank, real_readaddr[2:0]};
 assign io_writeaddr = {bank, writeaddr[2:0]};
 assign io_writedata = writedata;
@@ -93,14 +100,20 @@ assign io_write_en = (writeaddr[7:3] == 5'd1) && write_en;
 
 wire [7:0] gp_outputs [0:NUM_BANKS-1];
 
+// generate statement for the general purpose memories
+// create 1 per bank
 genvar i;
 generate
 for (i = 0; i < NUM_BANKS; i = i + 1) begin : MEM
-    wire gp_wren = write_en && bank == i && writeaddr[7:4] != 4'd0;
-    wire [7:0] gp_rdaddr =
-        (real_readaddr[7:4] == 4'd0) ? 8'd0 : real_readaddr - 8'h10;
-    wire [7:0] gp_wraddr =
-        (writeaddr[7:4] == 4'd0) ? 8'd0 : writeaddr - 8'h10;
+    // are we in the general purpose memory section?
+    wire write_gp_section = writeaddr[7:4] != 4'd0;
+    wire read_gp_section = real_readaddr[7:4] != 4'd0;
+
+    // don't enable write if we are in the wrong section or bank
+    wire gp_wren = write_en && bank == i && write_gp_section;
+    wire [7:0] gp_rdaddr = (!read_gp_section) ? 8'd0 : real_readaddr - 8'h10;
+    wire [7:0] gp_wraddr = (!write_gp_section) ? 8'd0 : writeaddr - 8'h10;
+
     gpmem mem (
         .clock (clk),
         .data (writedata),
@@ -113,9 +126,12 @@ for (i = 0; i < NUM_BANKS; i = i + 1) begin : MEM
 end
 endgenerate
 
+// mux readdata from the correct memory section
 always @(*) begin
+    // bypass if writing to the same address as read
     if (readaddr_sync == writeaddr_sync && write_en_sync)
         readdata = writedata_sync;
+    // null register always returns 0
     else if (readaddr_sync == 0)
         readdata = 8'd0;
     else if (readaddr_sync == 8'd1)
@@ -132,6 +148,8 @@ always @(*) begin
         readdata = gp_outputs[bank_sync];
 end
 
+// interrupt if GIE is set, one of the interrupts is triggered,
+// and the triggered interrupt is enabled in intcon
 wire internal_interrupt = status[7] && ((intcon & io_interrupts) != 0);
 assign interrupt = internal_interrupt;
 
@@ -146,6 +164,8 @@ always @(posedge clk) begin
         intcon <= 8'h00;
         intstatus <= 8'h00;
     end else begin
+        // save_accum gets asserted by the PC controller
+        // before switching into the interrupt context
         if (save_accum)
             accum_backup <= accum;
         if (accum_write)
@@ -160,14 +180,21 @@ always @(posedge clk) begin
                 intstatus <= writedata;
             else if (writeaddr[7:2] == 6'd1)
                 indirects[writeaddr[1:0]] <= writedata;
+            // don't need gpmem here, since that was taken care of
+            // inside the for-generate statement
         end
 
+        // only modify individual bits in the status register
+        // if we are not already writing to the status register
         if (!(write_en && writeaddr == 8'd1)) begin
             if (z_write)
                 status[0] <= zin;
             if (c_write)
                 status[1] <= cin;
             if (retint) begin
+                // on retint, set GIE again, restore the accumulator,
+                // and clear intstatus so that it doesn't get confused
+                // on the next interrupt
                 status[7] <= 1'b1;
                 accum <= accum_backup;
                 intstatus <= 8'd0;
@@ -175,6 +202,9 @@ always @(posedge clk) begin
         end
 
         if (internal_interrupt) begin
+            // if an interrupt occurs, we need to clear GIE to disable
+            // further interrupts and save which interrupts are set
+            // into instatus
             status[7] <= 1'b0;
             intstatus <= io_interrupts;
         end

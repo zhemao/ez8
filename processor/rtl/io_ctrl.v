@@ -1,3 +1,6 @@
+// This module handles access to IO memory.
+// Make changes here if you want to add new peripherals
+
 module io_ctrl (
     input clk,
     input reset,
