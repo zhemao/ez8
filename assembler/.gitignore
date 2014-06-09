@@ -2,8 +2,11 @@
 *.cmo
 *.cmi
 *.cmx
+*.native
+*.byte
 /scanner.ml
 /scanner.mli
 /parser.ml
 /parser.mli
 /ez8asm
+/_build
